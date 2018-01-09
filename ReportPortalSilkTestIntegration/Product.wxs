@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <?define ProductName="EPAM Report Portal Silk Test Integration" ?>
+  <?define ManufacturerTitle="EPAM Systems"?>
+  <?define Manufacturer="EPAM"?>
+  <?define ProductVersion="0.1.0.0" ?>
+  <?define ConfigFileName="ReportPortalConfiguration.xml"?>
+  <?define ReportPortalLibraryName="EPAM.ReportPortal.Client.DLL"?>
+  <?define ExternalDependenciesFolder="ExternalDependencies"?>
+  <?define BinaryDebugPath="../../../ReportPortal.Addins.RPC.COM/bin/x86/Debug/"?>
+  <Product Id="*" Name="$(var.ProductName)" Language="1033" Manufacturer="EPAM Systems" UpgradeCode="110B88CB-E1C7-42D6-A5BA-73C83FE7350F" Version="$(var.ProductVersion)">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+
+    <Feature Id="Product" Title="$(var.ProductName)" Level="1">
+      <ComponentGroupRef Id="Product" />
+    </Feature>
+    
+    <Feature Id="RPClient" Title="EPAM Report Portal Client" Level="1">
+      <ComponentRef Id="RPClient" />
+    </Feature>
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+
+      <!-- Skip license dialog -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="InstallDirDlg"
+               Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="2">1</Publish>
+    </UI>
+
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
+    <UIRef Id="WixUI_InstallDir"/>
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufactureFolder" Name="$(var.Manufacturer)">
+          <Directory Id="INSTALLFOLDER" Name="ReportPortalSilkTestIntegration" >
+            <Directory Id="INSTALLFOLDERED" Name="$(var.ExternalDependenciesFolder)" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <Component Id="RPClient" Directory="INSTALLFOLDERED" Guid="4EA7E70E-FA57-470B-95A9-22DAE66B52C8">
+      <File Id='RPClient' DiskId='1' Source='$(var.BinaryDebugPath)/$(var.ExternalDependenciesFolder)/$(var.ReportPortalLibraryName)' />
+      <File Id='RPClientNewtonsoft.Json' DiskId='1' Source='$(var.BinaryDebugPath)/$(var.ExternalDependenciesFolder)/Newtonsoft.Json.dll' />
+      <File Id='RPClientRestSharp' DiskId='1' Source='$(var.BinaryDebugPath)/$(var.ExternalDependenciesFolder)/RestSharp.dll' />
+    </Component>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="Product" Directory="INSTALLFOLDER">
+      <Component Id="ProductLib" Guid="5EA92A95-29B1-4105-ACCD-B07015DF8FAF">
+        <File Id='ProductLib' DiskId='1' Source='$(var.BinaryDebugPath)ReportPortal.Addins.RPC.COM.dll' />
+      </Component>
+      <Component Id="ProductConfig"  Guid="176D4A1B-A408-47F9-A1CE-98E4DF253222">
+        <File Id='ProductConfig' DiskId='1' Source='$(var.BinaryDebugPath)$(var.ConfigFileName)' />
+      </Component>
+      <Component Id="ChangeConfig" Guid="ED107DE9-0C0E-42D1-A2AD-3E72D7BA503D">
+        <util:XmlFile Id="AppConfigSetConnStr" Action="setValue" Permanent="yes" File="[INSTALLFOLDER]$(var.ConfigFileName)"
+             ElementPath="/ReportPortalConfiguration/GeneralConfiguration/LibraryPath" 
+             Value="[INSTALLFOLDER]/$(var.ExternalDependenciesFolder)/$(var.ReportPortalLibraryName)" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
