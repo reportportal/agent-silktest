@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace ReportPortal.Addins.RPC.COM
 {
-    class LengthComparer : IComparer<String>
+    [ComVisible(false)]
+    internal class LengthComparer : IComparer<string>
     {
         public int Compare(string x, string y)
         {
+            if (x == null)
+            {
+                return y == null? 0 : 1;
+            }
+            if (y == null)
+            {
+                return -1;
+            }
             int lengthComparison = y.Length.CompareTo(x.Length);
             if (lengthComparison == 0)
             {
-                return y.CompareTo(x);
+                lengthComparison = string.Compare(y, x, StringComparison.Ordinal);
             }
-            else
-            {
-                return lengthComparison;
-            }
+            return lengthComparison;
         }
     }
 }

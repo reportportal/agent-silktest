@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace ReportPortal.Addins.RPC.COM
 {
-    class DebugLogger
+    [ComVisible(false)]
+    static class DebugLogger
     {
         //Todo: replace with log4net
-        private static string logName = @"C:\RPLog.txt";
-        private static bool isEnabled = true;
+        private static string _logName = @"C:\RPLog.txt";
+        private static bool _isEnabled = true;
         public static void SetupLogger(string fileName, bool enabled)
         {
-            logName = fileName;
-            isEnabled = enabled;
+            _logName = fileName;
+            _isEnabled = enabled;
         }
 
         public static void Message( string message)
         {
-            if (isEnabled)
+            if (_isEnabled)
             {
-                File.AppendAllText(logName, DateTime.Now.ToString() + ": " +  message + "\r\n");
+                File.AppendAllText(_logName, DateTime.Now.ToString(CultureInfo.InvariantCulture) + ": " +  message + "\r\n");
             }
         }
 
         public static void Message(IEnumerable<string> message)
         {
-            File.AppendAllLines(logName, message);
+            File.AppendAllLines(_logName, message);
         }
     }
 }
