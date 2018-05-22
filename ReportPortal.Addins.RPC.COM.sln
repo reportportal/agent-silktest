@@ -1,13 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportPortal.Addins.RPC.COM", "ReportPortal.Addins.RPC.COM\ReportPortal.Addins.RPC.COM.csproj", "{0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "ReportPortalSilkTestIntegration", "ReportPortalSilkTestIntegration\ReportPortalSilkTestIntegration.wixproj", "{CAD0776C-F4CA-4327-8C4F-8596E058056F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRP", "TestRP\TestRP.csproj", "{D8EA2E98-1596-4309-BDF5-AAA51EA96B1F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReportPortal.SilkTest.Adapter", "ReportPortal.SilkTest.Adapter\ReportPortal.SilkTest.Adapter.vcxproj", "{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C} = {0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReportPortal.SilkTest.Adapter.Tests", "ReportPortal.SilkTest.Adapter.Tests\ReportPortal.SilkTest.Adapter.Tests.vcxproj", "{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C} = {0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTestApp", "CppTestApp\CppTestApp.vcxproj", "{D547225C-3AEA-4D49-8027-4484F958E30A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C} = {0DECB651-11A8-4D3D-AFBF-2BCCC4BF181C}
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA} = {E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +67,42 @@ Global
 		{D8EA2E98-1596-4309-BDF5-AAA51EA96B1F}.Release|x64.Build.0 = Release|x64
 		{D8EA2E98-1596-4309-BDF5-AAA51EA96B1F}.Release|x86.ActiveCfg = Release|x86
 		{D8EA2E98-1596-4309-BDF5-AAA51EA96B1F}.Release|x86.Build.0 = Release|x86
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|Any CPU.Build.0 = Debug|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|x64.ActiveCfg = Debug|x64
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|x64.Build.0 = Debug|x64
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|x86.ActiveCfg = Debug|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Debug|x86.Build.0 = Debug|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|Any CPU.Build.0 = Release|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|x64.ActiveCfg = Release|x64
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|x64.Build.0 = Release|x64
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|x86.ActiveCfg = Release|Win32
+		{E7F2D6CA-2E0D-47B7-B29E-C13ACE9E43EA}.Release|x86.Build.0 = Release|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|Any CPU.Build.0 = Debug|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|x64.ActiveCfg = Debug|x64
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|x64.Build.0 = Debug|x64
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|x86.ActiveCfg = Debug|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Debug|x86.Build.0 = Debug|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|Any CPU.Build.0 = Release|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|x64.ActiveCfg = Release|x64
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|x64.Build.0 = Release|x64
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|x86.ActiveCfg = Release|Win32
+		{6C0D88C2-D0D1-40F3-BDF5-62D233342C3D}.Release|x86.Build.0 = Release|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|Any CPU.Build.0 = Debug|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|x64.ActiveCfg = Debug|x64
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|x64.Build.0 = Debug|x64
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|x86.ActiveCfg = Debug|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Debug|x86.Build.0 = Debug|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|Any CPU.Build.0 = Release|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|x64.ActiveCfg = Release|x64
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|x64.Build.0 = Release|x64
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|x86.ActiveCfg = Release|Win32
+		{D547225C-3AEA-4D49-8027-4484F958E30A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
