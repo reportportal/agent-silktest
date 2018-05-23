@@ -10,9 +10,10 @@ namespace ReportPortal.Addins.RPC.COM
 
     [
         ComVisible(true),
-        Guid("C0B78E82-445F-4868-A2B1-6517EEB0FA52"),
+        Guid("B872B4EF-2123-48C3-8D10-ACC9164FC8A4"),
         ProgId("ReportPortal.Publisher.API"),
-        ClassInterface(ClassInterfaceType.None)
+        ClassInterface(ClassInterfaceType.None),
+        ComDefaultInterface(typeof(IReportPortalPublisher))
     ]
     public class ReportPortalPublisher : IReportPortalPublisher
     {
@@ -46,6 +47,11 @@ namespace ReportPortal.Addins.RPC.COM
         private bool _testNestingEnabled;
 
         private SortedDictionary<string, string> SuiteMap { get; set; }
+        
+        // it is needed for the COM interop
+        public ReportPortalPublisher()
+        {
+        }
 
         public bool Init(bool isTestNestingEnabled)
         {

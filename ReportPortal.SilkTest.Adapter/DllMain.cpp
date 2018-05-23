@@ -9,11 +9,13 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 	BOOL result = TRUE;
 	switch (ul_reason_for_call) {
 	case DLL_PROCESS_ATTACH:
-		result = ReportPortalPublisherComWrapper.Initialize() == true;
-
+	{
+		HRESULT hr = CoInitialize(NULL);
+		result = (hr == S_OK);
+	}
 		break;
 	case DLL_PROCESS_DETACH:
-		result = ReportPortalPublisherComWrapper.Deinitialize() == true;
+		CoUninitialize();
 		break;
 	}
 	return result;

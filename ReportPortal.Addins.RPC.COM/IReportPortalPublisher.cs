@@ -4,7 +4,7 @@ namespace ReportPortal.Addins.RPC.COM
 {
     [
         ComVisible(true),
-        Guid("0723B714-DB43-40E2-B258-491ABB0FB4FE")
+        Guid("02DD346D-B00F-4A04-8E6F-FC795328A009")
     ]
     public interface IReportPortalPublisher
     {
