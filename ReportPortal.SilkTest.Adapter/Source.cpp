@@ -25,3 +25,26 @@ bool Init(bool isTestNestingEnabled)
 	}
 	return false;
 }
+
+void AddLogItem(wchar_t* logMessage, int logLevel)
+{
+	ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
+}
+
+void StartTest(wchar_t* testFullName)
+{
+	ReportPortalPublisherComWrapper.StartTest(testFullName);
+}
+void FinishTest(int testOutcome, wchar_t* testFullName)
+{
+	ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
+}
+
+void StartLaunch()
+{
+	ReportPortalPublisherComWrapper.StartLaunch();
+}
+void FinishLaunch()
+{
+	ReportPortalPublisherComWrapper.FinishLaunch();
+}

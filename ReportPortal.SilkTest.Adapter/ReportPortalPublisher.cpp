@@ -31,4 +31,25 @@ bool CReportPortalPublisher::Init(bool isTestNestingEnabled)
 	return false;
 }
 
+void CReportPortalPublisher::AddLogItem(wchar_t* logMessage, int logLevel)
+{
+}
+
+void CReportPortalPublisher::StartTest(wchar_t* testFullName)
+{
+}
+
+void CReportPortalPublisher::FinishTest(int testOutcome, wchar_t* testFullName)
+{
+}
+
+void CReportPortalPublisher::StartLaunch()
+{
+}
+
+void CReportPortalPublisher::FinishLaunch()
+{
+}
+
+
 
