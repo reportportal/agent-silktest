@@ -14,13 +14,16 @@ public:
 public: // wrap methods
 	bool Init(bool isTestNestingEnabled);
 
-	void AddLogItem(wchar_t* logMessage, int logLevel);
+	bool AddLogItem(wchar_t* logMessage, int logLevel);
 
-	void StartTest(wchar_t* testFullName);
-	void FinishTest(int testOutcome, wchar_t* testFullName);
+	bool StartTest(wchar_t* testFullName);
+	bool FinishTest(int testOutcome, wchar_t* testFullName);
 
-	void StartLaunch();
-	void FinishLaunch();
+	bool StartLaunch();
+	bool FinishLaunch();
+
+	std::wstring GetLastError();
+
 };
 
 extern CReportPortalPublisher ReportPortalPublisherComWrapper;

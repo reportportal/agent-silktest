@@ -9,12 +9,28 @@
 
 using namespace std;
 
+void DisplayLastError();
+
 int main()
 {
 	
 	bool result = Init(false);
-	cout << "init return result: " << result << endl;
+	if (!result)
+	{
+		DisplayLastError();
+
+	}
     return 0;
+}
+
+void DisplayLastError()
+{
+	const int bufferSize = 1024;
+	wchar_t message[bufferSize];
+
+	int len = GetErrorDescription(message, bufferSize);
+
+	wcout << message;
 }
 
 

@@ -1,8 +1,16 @@
 #include "StdAfx.h"
 #include "ReportPortalPublisher.h"
 #include "SilkTestFunctions.h"
-#include <exception>
-#include <iostream>
+
+std::wstring errorMessage;
+
+inline std::wstring ConvertToWstring(const char* message)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::wstring wstr = converter.from_bytes(message);
+
+	return wstr;
+}
 
 bool Init(bool isTestNestingEnabled)
 {
@@ -14,37 +22,50 @@ bool Init(bool isTestNestingEnabled)
 	}
 	catch (_com_error& ex)
 	{
-		cerr << hex << "HRESULT: 0x" << ex.Error() << " Message:"<< ex.ErrorMessage() << endl;
+		std::wstring message = ConvertToWstring(ex.ErrorMessage());
+		std::wstringstream ss;
+		ss << hex << L"HRESULT: 0x" << ex.Error() << L" Message:" << message.c_str() << endl;
+		errorMessage = ss.rdbuf()->str();
 	}
 	catch (exception& ex)
 	{
-		cerr << ex.what() << endl;
+		errorMessage = ConvertToWstring(ex.what());
 	}
 	catch (...)
 	{
+		errorMessage = L"Unknown error";
 	}
 	return false;
 }
 
-void AddLogItem(wchar_t* logMessage, int logLevel)
+bool AddLogItem(wchar_t* logMessage, int logLevel)
 {
-	ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
+	return ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
 }
 
-void StartTest(wchar_t* testFullName)
+bool StartTest(wchar_t* testFullName)
 {
-	ReportPortalPublisherComWrapper.StartTest(testFullName);
+	return ReportPortalPublisherComWrapper.StartTest(testFullName);
 }
-void FinishTest(int testOutcome, wchar_t* testFullName)
+bool FinishTest(int testOutcome, wchar_t* testFullName)
 {
-	ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
+	return ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
 }
 
-void StartLaunch()
+bool StartLaunch()
 {
-	ReportPortalPublisherComWrapper.StartLaunch();
+	return ReportPortalPublisherComWrapper.StartLaunch();
 }
-void FinishLaunch()
+bool FinishLaunch()
 {
-	ReportPortalPublisherComWrapper.FinishLaunch();
+	return ReportPortalPublisherComWrapper.FinishLaunch();
+}
+
+int GetErrorDescription(wchar_t* message, int maxMessageSize)
+{
+	std::wstring lastError = ReportPortalPublisherComWrapper.GetLastError();
+	std::wstring& err = errorMessage.empty() ? lastError : errorMessage;
+
+	wcsncpy_s(message, maxMessageSize, err.c_str(), err.length());
+	return min(maxMessageSize, (int)err.length());
 }

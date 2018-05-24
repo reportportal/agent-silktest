@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ReportPortal.Addins.RPC.COM
 {
@@ -45,13 +46,10 @@ namespace ReportPortal.Addins.RPC.COM
         private string _lId;
         private string _testId;
         private bool _testNestingEnabled;
+        private string _lastError = string.Empty;
 
         private SortedDictionary<string, string> SuiteMap { get; set; }
         
-        // it is needed for the COM interop
-        public ReportPortalPublisher()
-        {
-        }
 
         public bool Init(bool isTestNestingEnabled)
         {
@@ -107,26 +105,37 @@ namespace ReportPortal.Addins.RPC.COM
 
                     var tService = _assemblyReportPortalClient.GetType("EPAM.ReportPortal.Client.Service");
                     _service = Activator.CreateInstance(tService, constructorParameters.ToArray());
+                    ReportSuccess();
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.Message(ex.Message);
+                    ReportError("Init", ex);
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                DebugLogger.Message(e.Message);
+                ReportError("Init", ex);
                 return false;
             }
         }
-        public void AddLogItem(string logMessage, int logLevel)
+        public bool AddLogItem(string logMessage, int logLevel)
         {
-            _AddLogItem(logMessage, logLevel);
+            try
+            {
+                AddLogItemToReportPortal(logMessage, logLevel);
+                ReportSuccess();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ReportError("AddLogItem", ex);
+                return false;
+            }
         }
 
-        public void StartLaunch()
+        public bool StartLaunch()
         {
             DebugLogger.Message("StartLaunch");
             try
@@ -151,23 +160,27 @@ namespace ReportPortal.Addins.RPC.COM
                 var res = methodInfo?.Invoke(_service, parameters);
                 _lId = (string) res?.GetType().GetProperty("Id")?.GetValue(res);
                 DebugLogger.Message("StartLaunch. ID: " + _lId);
+                ReportSuccess();
+                return true;
             }
             catch (Exception ex)
             {
-                DebugLogger.Message("StartLaunch\r\n" + ex.Message + "\r\n" + ex.InnerException?.Message);
+                ReportError("StartLaunch", ex);
+                return false;
             }
         }
-        public void StartTest(string testFullName)
+        public bool StartTest(string testFullName)
         {
             DebugLogger.Message("StartTest: " + testFullName);
-            if (!string.IsNullOrEmpty(_testId) && _testNestingEnabled)
-            {
-                _AddLogItem("Starting nested test case: " + testFullName, 1);
-                return;
-            }
-
             try
             {
+                if (!string.IsNullOrEmpty(_testId) && _testNestingEnabled)
+                {
+                    AddLogItemToReportPortal("Starting nested test case: " + testFullName, 1);
+                    ReportSuccess();
+                    return true;
+                }
+
                 var path = testFullName.Split(':').ToList();
                 var testName = path[path.Count - 1];
                 path = path.GetRange(0, path.Count - 1);
@@ -211,28 +224,43 @@ namespace ReportPortal.Addins.RPC.COM
                     //testName = testFullName;
                 }
                 DebugLogger.Message("StartTest: " + testFullName + "(" + _testId + ")");
+                ReportSuccess();
+                return true;
             }
             catch (Exception ex)
             {
-                DebugLogger.Message("StartTest\r\n" + ex.Message);
+                ReportError("StartTest", ex);
+                return false;
             }
         }
 
-        public void FinishTest(int testOutcome, string testFullName = null)
+
+        public bool FinishTest(int testOutcome, string testFullName = null)
         {
             if (_garbageList.Contains(_testId))
             {
                 var testIDtoFinish = _testId;
                 if (!string.IsNullOrEmpty(testFullName))
+                {
                     if (SuiteMap.ContainsKey(testFullName))
                     {
                         testIDtoFinish = SuiteMap[testFullName];
                     }
                     else
                     {
-                        _AddLogItem("Finish nested test case: " + testFullName, 1);
-                        return;
+                        try
+                        {
+                            AddLogItemToReportPortal("Finish nested test case: " + testFullName, 1);
+                            ReportSuccess();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportError("FinishTest", ex);
+                            return false;
+                        }
                     }
+                }
 
                 DebugLogger.Message("FinishTest: " + testIDtoFinish + ". Outcome:" + testOutcome);
                 try
@@ -258,35 +286,78 @@ namespace ReportPortal.Addins.RPC.COM
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.Message("FinishTest\r\n" + ex.InnerException?.Message);
+                    ReportError("FinishTest", ex);
+                    return false;
                 }
             }
+            ReportSuccess();
+            return true;
         }
-        public void FinishLaunch()
+
+        public bool FinishLaunch()
         {
-            foreach (var entry in SuiteMap)
+            try
             {
-                Console.WriteLine(entry);
-                FinishSuite(entry.Value, (int) Status.Passed);
+                foreach (var entry in SuiteMap)
+                {
+                    FinishSuite(entry.Value, (int) Status.Passed);
+                }
+
+                var propValue = new Dictionary<string, object>
+                {
+                    {"EndTime", DateTime.UtcNow}
+                };
+
+                var parameters = new object[3];
+                parameters[0] = _lId;
+                parameters[1] =
+                    RequestWithProperties("EPAM.ReportPortal.Client.Requests.FinishLaunchRequest", propValue);
+
+                parameters[2] = false;
+                var methodInfo = _service.GetType().GetMethod("FinishLaunch");
+                methodInfo?.Invoke(_service, parameters);
+
+                ReportSuccess();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ReportError("FinishLaunch", ex);
+                return false;
+
+            }
+        }
+
+        public string GetLastError()
+        {
+            return _lastError;
+        }
+
+        private void ReportSuccess()
+        {
+            _lastError = "success";
+        }
+        private void ReportError(string failedFunction, Exception exception)
+        {
+            var text = new StringBuilder();
+            text.Append($"{failedFunction} is failed").AppendLine();
+            text.Append("Message: ").Append(exception.Message).AppendLine();
+
+            int i = 1;
+            for (var e = exception.InnerException; e != null; e = e.InnerException)
+            {
+                text.Append($"Inner exception #{i++}: {e.Message}").AppendLine();
             }
 
-            var propValue = new Dictionary<string, object>
-            {
-                {"EndTime", DateTime.UtcNow}
-            };
-
-            var parameters = new object[3];
-            parameters[0] = _lId;
-            parameters[1] = RequestWithProperties("EPAM.ReportPortal.Client.Requests.FinishLaunchRequest", propValue);
-            
-            parameters[2] = false;
-            var methodInfo = _service.GetType().GetMethod("FinishLaunch");
-            methodInfo?.Invoke(_service, parameters);
+            _lastError = text.ToString();
+            DebugLogger.Message(_lastError);
         }
 
-        private void _AddLogItem(string logMessage, int logLevel)
+
+        private void AddLogItemToReportPortal(string logMessage, int logLevel)
         {
-            DebugLogger.Message("AddLogItem: " + logMessage + ". logLevel: " + logLevel);
+            var message = "AddLogItem: " + logMessage + ". logLevel: " + logLevel;
+            DebugLogger.Message(message);
             try
             {
                 var propValue = new Dictionary<string, object>
@@ -305,8 +376,8 @@ namespace ReportPortal.Addins.RPC.COM
             }
             catch (Exception ex)
             {
-                DebugLogger.Message("AddLogItem: " + logMessage + ". logLevel: " + logLevel + ". Exception: " +
-                                    ex.Message);
+                DebugLogger.Message(message + ". Exception: " + ex.Message);
+                throw;
             }
         }
 

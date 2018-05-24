@@ -11,16 +11,19 @@ namespace ReportPortal.Addins.RPC.COM
         [DispId(1)]
         bool Init(bool isTestNestingEnabled);
         [DispId(2)]
-        void AddLogItem(string logMessage, int logLevel);
+        bool AddLogItem(string logMessage, int logLevel);
         [DispId(3)]
-        void StartLaunch();
+        bool StartLaunch();
 
         [DispId(4)]
-        void StartTest(string testFullName);
+        bool StartTest(string testFullName);
         [DispId(5)]
-        void FinishLaunch();
+        bool FinishLaunch();
 
         [DispId(6)]
-        void FinishTest(int testOutcome, string testFullName = null);
+        bool FinishTest(int testOutcome, string testFullName = null);
+
+        [DispId(7)]
+        string GetLastError();
     }
 }

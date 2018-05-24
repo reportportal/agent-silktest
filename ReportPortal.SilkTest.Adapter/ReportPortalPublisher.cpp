@@ -31,32 +31,88 @@ bool CReportPortalPublisher::Init(bool isTestNestingEnabled)
 	return false;
 }
 
-void CReportPortalPublisher::AddLogItem(wchar_t* logMessage, int logLevel)
+bool CReportPortalPublisher::AddLogItem(wchar_t* logMessage, int logLevel)
 {
 	_bstr_t comString = logMessage;
-	_reportPortalPublisherComPtr->AddLogItem(comString, logLevel);
+	VARIANT_BOOL ret;
+	HRESULT hr = _reportPortalPublisherComPtr->AddLogItem(comString, logLevel, &ret);
+	if (hr == S_OK)
+	{
+		return ret != 0;
+	}
+
+	return false;
 }
 
-void CReportPortalPublisher::StartTest(wchar_t* testFullName)
+bool CReportPortalPublisher::StartTest(wchar_t* testFullName)
 {
 	_bstr_t comString = testFullName;
-	_reportPortalPublisherComPtr->StartTest(comString);
+	VARIANT_BOOL ret;
+	HRESULT hr = _reportPortalPublisherComPtr->StartTest(comString, &ret);
+	if (hr == S_OK)
+	{
+		return ret != 0;
+	}
+
+	return false;
 }
 
-void CReportPortalPublisher::FinishTest(int testOutcome, wchar_t* testFullName)
+bool CReportPortalPublisher::FinishTest(int testOutcome, wchar_t* testFullName)
 {
 	_bstr_t comString = testFullName;
-	_reportPortalPublisherComPtr->FinishTest(testOutcome, comString);
+	VARIANT_BOOL ret;
+	HRESULT hr = _reportPortalPublisherComPtr->FinishTest(testOutcome, comString, &ret);
+	if (hr == S_OK)
+	{
+		return ret != 0;
+	}
+
+	return false;
 }
 
-void CReportPortalPublisher::StartLaunch()
+bool CReportPortalPublisher::StartLaunch()
 {
-	_reportPortalPublisherComPtr->StartLaunch();
+	VARIANT_BOOL ret;
+	HRESULT hr = _reportPortalPublisherComPtr->StartLaunch(&ret);
+	if (hr == S_OK)
+	{
+		return ret != 0;
+	}
+
+	return false;
 }
 
-void CReportPortalPublisher::FinishLaunch()
+bool CReportPortalPublisher::FinishLaunch()
 {
-	_reportPortalPublisherComPtr->FinishLaunch();
+	VARIANT_BOOL ret;
+	HRESULT hr = _reportPortalPublisherComPtr->FinishLaunch(&ret);
+	if (hr == S_OK)
+	{
+		return ret != 0;
+	}
+
+	return false;
+}
+
+
+std::wstring CReportPortalPublisher::GetLastError()
+{
+	using namespace std;
+
+	BSTR errorMessage;
+	HRESULT hr = _reportPortalPublisherComPtr->GetLastError(&errorMessage);
+	_bstr_t bstr(errorMessage, false);
+
+	if (hr == S_OK)
+	{
+		return std::wstring(bstr);
+	}
+	else
+	{
+		std::wstringstream ss;
+		ss << hex << L"HRESULT: 0x" << hr << endl;
+		return ss.rdbuf()->str();
+	}
 }
 
 
