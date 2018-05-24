@@ -33,22 +33,30 @@ bool CReportPortalPublisher::Init(bool isTestNestingEnabled)
 
 void CReportPortalPublisher::AddLogItem(wchar_t* logMessage, int logLevel)
 {
+	_bstr_t comString = logMessage;
+	_reportPortalPublisherComPtr->AddLogItem(comString, logLevel);
 }
 
 void CReportPortalPublisher::StartTest(wchar_t* testFullName)
 {
+	_bstr_t comString = testFullName;
+	_reportPortalPublisherComPtr->StartTest(comString);
 }
 
 void CReportPortalPublisher::FinishTest(int testOutcome, wchar_t* testFullName)
 {
+	_bstr_t comString = testFullName;
+	_reportPortalPublisherComPtr->FinishTest(testOutcome, comString);
 }
 
 void CReportPortalPublisher::StartLaunch()
 {
+	_reportPortalPublisherComPtr->StartLaunch();
 }
 
 void CReportPortalPublisher::FinishLaunch()
 {
+	_reportPortalPublisherComPtr->FinishLaunch();
 }
 
 
