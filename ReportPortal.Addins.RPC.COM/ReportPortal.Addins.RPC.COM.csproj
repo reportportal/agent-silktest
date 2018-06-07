@@ -99,8 +99,10 @@
     <Compile Include="DebugLogger.cs" />
     <Compile Include="IReportPortalPublisher.cs" />
     <Compile Include="LengthComparer.cs" />
+    <Compile Include="LogLevel.cs" />
     <Compile Include="ReportPortalPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

@@ -40,25 +40,65 @@ bool Init(bool isTestNestingEnabled)
 
 bool AddLogItem(wchar_t* logMessage, int logLevel)
 {
-	return ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
+	try
+	{
+		return ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
+	}
+	catch (const std::exception& ex)
+	{
+		errorMessage = ConvertToWstring(ex.what());
+	}
+	return false;
 }
 
 bool StartTest(wchar_t* testFullName)
 {
-	return ReportPortalPublisherComWrapper.StartTest(testFullName);
+	try
+	{
+		return ReportPortalPublisherComWrapper.StartTest(testFullName);
+	}
+	catch (const std::exception& ex)
+	{
+		errorMessage = ConvertToWstring(ex.what());
+	}
+	return false;
 }
 bool FinishTest(int testOutcome, wchar_t* testFullName)
 {
-	return ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
+	try
+	{
+		return ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
+	}
+	catch (const std::exception& ex)
+	{
+		errorMessage = ConvertToWstring(ex.what());
+	}
+	return false;
 }
 
 bool StartLaunch()
 {
-	return ReportPortalPublisherComWrapper.StartLaunch();
+	try
+	{
+		return ReportPortalPublisherComWrapper.StartLaunch();
+	}
+	catch (const std::exception& ex)
+	{
+		errorMessage = ConvertToWstring(ex.what());
+	}
+	return false;
 }
 bool FinishLaunch()
 {
-	return ReportPortalPublisherComWrapper.FinishLaunch();
+	try
+	{
+		return ReportPortalPublisherComWrapper.FinishLaunch();
+	}
+	catch (const std::exception& ex)
+	{
+		errorMessage = ConvertToWstring(ex.what());
+	}
+	return false;
 }
 
 int GetErrorDescription(wchar_t* message, int maxMessageSize)

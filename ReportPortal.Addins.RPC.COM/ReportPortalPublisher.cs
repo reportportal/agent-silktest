@@ -8,7 +8,6 @@ using System.Text;
 
 namespace ReportPortal.Addins.RPC.COM
 {
-
     [
         ComVisible(true),
         Guid("B872B4EF-2123-48C3-8D10-ACC9164FC8A4"),
@@ -18,28 +17,6 @@ namespace ReportPortal.Addins.RPC.COM
     ]
     public class ReportPortalPublisher : IReportPortalPublisher
     {
-        private enum Status
-        {
-            None,
-            //InProgress,
-            Passed,
-            Failed,
-            //Skipped,
-            //Interrupted
-        }
-
-        private enum LogLevel
-        {
-            //None = 0,
-            Trace = 1, //
-            Debug = 2, //
-            Info = 3, //
-            Warning = 4, //
-            Error = 5 //
-        }
-
-        private readonly Dictionary<int, Status> _statusMap = new Dictionary<int, Status>();
-        private readonly Dictionary<int, LogLevel> _logLevelMap = new Dictionary<int, LogLevel>();
         private readonly List<string> _garbageList = new List<string>();
         private object _service;
         private Assembly _assemblyReportPortalClient;
@@ -66,19 +43,7 @@ namespace ReportPortal.Addins.RPC.COM
                 DebugLogger.Message("testNestingEnabled: " + _testNestingEnabled);
                 _lId = null;
                 _testId = null;
-
-                _statusMap[3] = Status.Failed;
-                _statusMap[1] = Status.Passed;
-                _statusMap[2] = Status.Passed;
-                _statusMap[9] = Status.None;
-                _statusMap[0] = Status.None;
-
-                _logLevelMap[1] = LogLevel.Info;
-                _logLevelMap[2] = LogLevel.Warning;
-                _logLevelMap[3] = LogLevel.Error;
-                _logLevelMap[6] = LogLevel.Trace;
-                _logLevelMap[7] = LogLevel.Debug;
-
+                
                 SuiteMap = new SortedDictionary<string, string>(new LengthComparer());
 
                 IWebProxy proxy = null;
@@ -120,7 +85,7 @@ namespace ReportPortal.Addins.RPC.COM
                 return false;
             }
         }
-        public bool AddLogItem(string logMessage, int logLevel)
+        public bool AddLogItem(string logMessage, LogLevel logLevel)
         {
             try
             {
@@ -176,7 +141,7 @@ namespace ReportPortal.Addins.RPC.COM
             {
                 if (!string.IsNullOrEmpty(_testId) && _testNestingEnabled)
                 {
-                    AddLogItemToReportPortal("Starting nested test case: " + testFullName, 1);
+                    AddLogItemToReportPortal("Starting nested test case: " + testFullName, LogLevel.Info);
                     ReportSuccess();
                     return true;
                 }
@@ -235,7 +200,7 @@ namespace ReportPortal.Addins.RPC.COM
         }
 
 
-        public bool FinishTest(int testOutcome, string testFullName = null)
+        public bool FinishTest(Status testOutcome, string testFullName = null)
         {
             if (_garbageList.Contains(_testId))
             {
@@ -250,7 +215,7 @@ namespace ReportPortal.Addins.RPC.COM
                     {
                         try
                         {
-                            AddLogItemToReportPortal("Finish nested test case: " + testFullName, 1);
+                            AddLogItemToReportPortal("Finish nested test case: " + testFullName, LogLevel.Info);
                             ReportSuccess();
                             return true;
                         }
@@ -268,7 +233,7 @@ namespace ReportPortal.Addins.RPC.COM
                     var propValue = new Dictionary<string, object>
                     {
                         {"EndTime", DateTime.UtcNow},
-                        {"Status", _statusMap[testOutcome]}
+                        {"Status", testOutcome}
                     };
 
                     var parameters = new object[2];
@@ -354,7 +319,7 @@ namespace ReportPortal.Addins.RPC.COM
         }
 
 
-        private void AddLogItemToReportPortal(string logMessage, int logLevel)
+        private void AddLogItemToReportPortal(string logMessage, LogLevel logLevel)
         {
             var message = "AddLogItem: " + logMessage + ". logLevel: " + logLevel;
             DebugLogger.Message(message);
@@ -363,7 +328,7 @@ namespace ReportPortal.Addins.RPC.COM
                 var propValue = new Dictionary<string, object>
                 {
                     {"TestItemId", _testId},
-                    {"Level", _logLevelMap[logLevel]},
+                    {"Level", logLevel},
                     {"Time", DateTime.UtcNow},
                     {"Text", logMessage}
                 };

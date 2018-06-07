@@ -13,15 +13,16 @@ namespace TestRP
                 reportPortal.StartTest("TestG1:TestG2:Test");
 
 
-                reportPortal.AddLogItem("_logLevelMap[1] = LogLevel.Info;", 1);
-                reportPortal.AddLogItem("_logLevelMap[2] = LogLevel.Warning;", 2);
-                reportPortal.AddLogItem("_logLevelMap[3] = LogLevel.Error;", 3);
-                reportPortal.AddLogItem("_logLevelMap[6] = LogLevel.Trace;", 6);
-                reportPortal.AddLogItem("_logLevelMap[7] = LogLevel.Debug;", 7);
-                reportPortal.StartTest("TestG1:TestG2:Test2");
-                reportPortal.FinishTest(1, "TestG1:TestG2:Test2");
+                reportPortal.AddLogItem("LogLevel.Info;", LogLevel.Info);
+                reportPortal.AddLogItem("LogLevel.Warning;", LogLevel.Warning);
+                reportPortal.AddLogItem("LogLevel.Error;", LogLevel.Error);
+                reportPortal.AddLogItem("LogLevel.Trace;", LogLevel.Trace);
+                reportPortal.AddLogItem("LogLevel.Debug;", LogLevel.Trace);
 
-                reportPortal.FinishTest(1);
+                reportPortal.StartTest("TestG1:TestG2:Test2");
+                reportPortal.FinishTest(Status.Passed, "TestG1:TestG2:Test2");
+
+                reportPortal.FinishTest(Status.Passed);
                 reportPortal.FinishLaunch();
             }
         }
