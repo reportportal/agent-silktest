@@ -5,6 +5,9 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using EPAM.ReportPortal.Client;
+using EPAM.ReportPortal.Client.Models;
+using EPAM.ReportPortal.Client.Requests;
 
 namespace ReportPortal.Addins.RPC.COM
 {
@@ -18,12 +21,11 @@ namespace ReportPortal.Addins.RPC.COM
     public class ReportPortalPublisher : IReportPortalPublisher
     {
         private readonly List<string> _garbageList = new List<string>();
-        private object _service;
-        private Assembly _assemblyReportPortalClient;
         private string _lId;
         private string _testId;
         private bool _testNestingEnabled;
         private string _lastError = string.Empty;
+        private Service _reportPortal;
 
         private SortedDictionary<string, string> SuiteMap { get; set; }
         
@@ -37,8 +39,6 @@ namespace ReportPortal.Addins.RPC.COM
                 DebugLogger.Message("init executed");
                 DebugLogger.Message("Library path: " +
                                     Configuration.ReportPortalConfiguration.GeneralConfiguration.LibraryPath);
-                _assemblyReportPortalClient =
-                    Assembly.LoadFrom(Configuration.ReportPortalConfiguration.GeneralConfiguration.LibraryPath);
                 _testNestingEnabled = isTestNestingEnabled;
                 DebugLogger.Message("testNestingEnabled: " + _testNestingEnabled);
                 _lId = null;
@@ -46,30 +46,14 @@ namespace ReportPortal.Addins.RPC.COM
                 
                 SuiteMap = new SortedDictionary<string, string>(new LengthComparer());
 
-                IWebProxy proxy = null;
-                var proxyConfig = Configuration.ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration;
-                if (proxyConfig != null)
-                {
-                    proxy = new WebProxy(proxyConfig.Server);
-                    if (!string.IsNullOrEmpty(proxyConfig.Username) && !string.IsNullOrEmpty(proxyConfig.Password))
-                        proxy.Credentials = string.IsNullOrEmpty(proxyConfig.Domain) == false
-                            ? new NetworkCredential(proxyConfig.Username, proxyConfig.Password, proxyConfig.Domain)
-                            : new NetworkCredential(proxyConfig.Username, proxyConfig.Password);
-                }
                 try
                 {
-                    var constructorParameters = new List<object>
-                    {
+                    _reportPortal = new Service(
                         new Uri(Configuration.ReportPortalConfiguration.ServerConfiguration.Url),
                         Configuration.ReportPortalConfiguration.ServerConfiguration.Project,
-                        Configuration.ReportPortalConfiguration.ServerConfiguration.Password
-                    };
+                        Configuration.ReportPortalConfiguration.ServerConfiguration.Password,
+                        TryToCreateProxyServer());
 
-                    if (proxy != null)
-                        constructorParameters.Add(proxy);
-
-                    var tService = _assemblyReportPortalClient.GetType("EPAM.ReportPortal.Client.Service");
-                    _service = Activator.CreateInstance(tService, constructorParameters.ToArray());
                     ReportSuccess();
                     return true;
                 }
@@ -105,25 +89,14 @@ namespace ReportPortal.Addins.RPC.COM
             DebugLogger.Message("StartLaunch");
             try
             {
-                var tRequest =
-                    _assemblyReportPortalClient.GetType("EPAM.ReportPortal.Client.Requests.StartLaunchRequest");
-                var requestNewLaunch = Activator.CreateInstance(tRequest);
-
-                var propName = requestNewLaunch.GetType().
-                    GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
-                if (null != propName && propName.CanWrite)
-                    propName.SetValue(requestNewLaunch,
-                        Configuration.ReportPortalConfiguration.LaunchConfiguration.LaunchName, null);
-                var propTime = requestNewLaunch.GetType().
-                    GetProperty("StartTime", BindingFlags.Public | BindingFlags.Instance);
-                if (null != propTime && propTime.CanWrite)
-                    propTime.SetValue(requestNewLaunch, DateTime.UtcNow, null);
-
-                var parameters = new object[1];
-                parameters[0] = requestNewLaunch;
-                var methodInfo = _service.GetType().GetMethod("StartLaunch");
-                var res = methodInfo?.Invoke(_service, parameters);
-                _lId = (string) res?.GetType().GetProperty("Id")?.GetValue(res);
+                var launchRequest = new StartLaunchRequest()
+                {
+                    Name = Configuration.ReportPortalConfiguration.LaunchConfiguration.LaunchName,
+                    StartTime = DateTime.UtcNow
+                };
+                
+                var launch = _reportPortal.StartLaunch(launchRequest);
+                _lId = launch?.Id;
                 DebugLogger.Message("StartLaunch. ID: " + _lId);
                 ReportSuccess();
                 return true;
@@ -162,30 +135,20 @@ namespace ReportPortal.Addins.RPC.COM
                     parentSuite = SuiteMap[currentSuiteName];
                 }
 
-                var propValue = new Dictionary<string, object>
+
+                var testItem = new StartTestItemRequest
                 {
-                    {"LaunchId", _lId},
-                    {"Name", testName},
-                    {"StartTime", DateTime.UtcNow},
-                    {"Type", 3}
+                    LaunchId = _lId,
+                    Name = testName,
+                    StartTime = DateTime.UtcNow,
+                    Type = TestItemType.Step
                 };
-
-                var parameters = new object[2];
-                parameters[0] = parentSuite;
-                parameters[1] = RequestWithProperties("EPAM.ReportPortal.Client.Requests.StartTestItemRequest", propValue);
-                var methodsInfo = _service.GetType().GetMethods().
-                    Where(p => p.Name == "StartTestItem" && p.GetParameters().Length == 2).ToArray();
-
-                DebugLogger.Message(methodsInfo.Select(x => x.Name));
-                var methodInfo = methodsInfo.First();
-                var res = methodInfo.Invoke(_service, parameters);
-                var newtestId = (string) res.GetType().GetProperty("Id")?.GetValue(res);
-
-                _garbageList.Add(newtestId);
-                SuiteMap[testFullName] = newtestId;
+                var res = _reportPortal.StartTestItem(parentSuite, testItem);
+                _garbageList.Add(res.Id);
+                SuiteMap[testFullName] = res.Id;
                 if (string.IsNullOrEmpty(_testId))
                 {
-                    _testId = newtestId;
+                    _testId = res.Id;
                     //testName = testFullName;
                 }
                 DebugLogger.Message("StartTest: " + testFullName + "(" + _testId + ")");
@@ -230,20 +193,14 @@ namespace ReportPortal.Addins.RPC.COM
                 DebugLogger.Message("FinishTest: " + testIDtoFinish + ". Outcome:" + testOutcome);
                 try
                 {
-                    var propValue = new Dictionary<string, object>
+                    var finishTestItemRequest = new FinishTestItemRequest()
                     {
-                        {"EndTime", DateTime.UtcNow},
-                        {"Status", testOutcome}
+                        EndTime = DateTime.UtcNow,
+                        Status = (EPAM.ReportPortal.Client.Models.Status) testOutcome
                     };
-
-                    var parameters = new object[2];
-                    parameters[0] = testIDtoFinish;
-                    parameters[1] = RequestWithProperties("EPAM.ReportPortal.Client.Requests.FinishTestItemRequest",
-                        propValue);
-
-                    var methodInfo = _service.GetType().GetMethod("FinishTestItem");
-                    methodInfo?.Invoke(_service, parameters);
+                    _reportPortal.FinishTestItem(testIDtoFinish, finishTestItemRequest);
                     _garbageList.Remove(testIDtoFinish);
+
                     if (string.IsNullOrEmpty(testFullName) || _testId == testIDtoFinish)
                         _testId = null;
                     else
@@ -265,22 +222,10 @@ namespace ReportPortal.Addins.RPC.COM
             {
                 foreach (var entry in SuiteMap)
                 {
-                    FinishSuite(entry.Value, (int) Status.Passed);
+                    FinishSuite(entry.Value, Status.Passed);
                 }
 
-                var propValue = new Dictionary<string, object>
-                {
-                    {"EndTime", DateTime.UtcNow}
-                };
-
-                var parameters = new object[3];
-                parameters[0] = _lId;
-                parameters[1] =
-                    RequestWithProperties("EPAM.ReportPortal.Client.Requests.FinishLaunchRequest", propValue);
-
-                parameters[2] = false;
-                var methodInfo = _service.GetType().GetMethod("FinishLaunch");
-                methodInfo?.Invoke(_service, parameters);
+                _reportPortal.FinishLaunch(_lId, new FinishLaunchRequest() {EndTime = DateTime.UtcNow});
 
                 ReportSuccess();
                 return true;
@@ -325,19 +270,14 @@ namespace ReportPortal.Addins.RPC.COM
             DebugLogger.Message(message);
             try
             {
-                var propValue = new Dictionary<string, object>
+                var addLogItemRequest = new AddLogItemRequest()
                 {
-                    {"TestItemId", _testId},
-                    {"Level", logLevel},
-                    {"Time", DateTime.UtcNow},
-                    {"Text", logMessage}
+                    TestItemId =  _testId,
+                    Level = (EPAM.ReportPortal.Client.Models.LogLevel)logLevel,
+                    Time =  DateTime.UtcNow,
+                    Text = logMessage
                 };
-
-                var parameters = new object[1];
-                parameters[0] = RequestWithProperties("EPAM.ReportPortal.Client.Requests.AddLogItemRequest", propValue);
-
-                var methodInfo = _service.GetType().GetMethod("AddLogItem");
-                methodInfo?.Invoke(_service, parameters);
+                _reportPortal.AddLogItem(addLogItemRequest);
             }
             catch (Exception ex)
             {
@@ -349,59 +289,47 @@ namespace ReportPortal.Addins.RPC.COM
         private string StartSuite(string suiteName, string parentSuite = null)
         {
             DebugLogger.Message("StartSuite: " + suiteName + ". parentSuite: " + parentSuite);
-            var propValue = new Dictionary<string, object>
+            var startTestItemRequest = new StartTestItemRequest()
             {
-                {"LaunchId", _lId},
-                {"Name", suiteName},
-                {"StartTime", DateTime.UtcNow},
-                {"Type", 1}
+                LaunchId = _lId,
+                Name = suiteName,
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Suite
             };
-
-            var parameters = new object[2];
-            parameters[0] = parentSuite;
-            parameters[1] = RequestWithProperties("EPAM.ReportPortal.Client.Requests.StartTestItemRequest", propValue);
-            var methodInfo = _service.GetType().GetMethods().
-                First(p => p.Name == "StartTestItem" && p.GetParameters().Length == 2);
-            var res = methodInfo.Invoke(_service, parameters);
+            var res = _reportPortal.StartTestItem(parentSuite, startTestItemRequest);
 
             var suiteId = (string)res.GetType().GetProperty("Id")?.GetValue(res);
             DebugLogger.Message("StartSuite: " + suiteName + " (" + suiteId + "). parentSuite: " + parentSuite);
             return suiteId;
         }
         
-        private void FinishSuite(string suiteId, int testOutcome)
+        private void FinishSuite(string suiteId, Status testOutcome)
         {
             if (_garbageList.Contains(suiteId))
             {
-                var propValue = new Dictionary<string, object>
+                var finishTestItemRequest = new FinishTestItemRequest()
                 {
-                    {"EndTime", DateTime.UtcNow},
-                    {"Status", testOutcome}
+                    EndTime = DateTime.UtcNow,
+                    Status = (EPAM.ReportPortal.Client.Models.Status) testOutcome
                 };
-
-                var parameters = new object[2];
-                parameters[0] = suiteId;
-                parameters[1] =
-                    RequestWithProperties("EPAM.ReportPortal.Client.Requests.FinishTestItemRequest", propValue);
-                var methodInfo = _service.GetType().GetMethod("FinishTestItem");
-                methodInfo?.Invoke(_service, parameters);
+                _reportPortal.FinishTestItem(suiteId, finishTestItemRequest);
                 _garbageList.Remove(suiteId);
             }
         }
 
-
-        private object RequestWithProperties(string typeName, Dictionary<string, object> propValue)
+        private static IWebProxy TryToCreateProxyServer()
         {
-            var tRequest = _assemblyReportPortalClient.GetType(typeName);
-            var requestWithProperties = Activator.CreateInstance(tRequest);
-            foreach (var entry in propValue)
+            IWebProxy proxy = null;
+            var proxyConfig = Configuration.ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration;
+            if (proxyConfig != null)
             {
-                var prop = requestWithProperties.GetType().
-                    GetProperty(entry.Key, BindingFlags.Public | BindingFlags.Instance);
-                if (null != prop && prop.CanWrite)
-                    prop.SetValue(requestWithProperties, entry.Value, null);
+                proxy = new WebProxy(proxyConfig.Server);
+                if (!string.IsNullOrEmpty(proxyConfig.Username) && !string.IsNullOrEmpty(proxyConfig.Password))
+                    proxy.Credentials = string.IsNullOrEmpty(proxyConfig.Domain) == false
+                        ? new NetworkCredential(proxyConfig.Username, proxyConfig.Password, proxyConfig.Domain)
+                        : new NetworkCredential(proxyConfig.Username, proxyConfig.Password);
             }
-            return requestWithProperties;
+            return proxy;
         }
     }
 
