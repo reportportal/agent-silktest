@@ -53,7 +53,6 @@ namespace ReportPortal.Addins.RPC.COM
     public class GeneralConfiguration
     {
         public string LogFile { get; set; }
-        public string LibraryPath { get; set; }
         public bool DebugMode { get; set; }
         public ProxyConfiguration ProxyConfiguration { get; set; }
     }

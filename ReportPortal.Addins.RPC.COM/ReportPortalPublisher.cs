@@ -36,8 +36,6 @@ namespace ReportPortal.Addins.RPC.COM
                 DebugLogger.SetupLogger(Configuration.ReportPortalConfiguration.GeneralConfiguration.LogFile,
                     Configuration.ReportPortalConfiguration.GeneralConfiguration.DebugMode);
                 DebugLogger.Message("init executed");
-                DebugLogger.Message("Library path: " +
-                                    Configuration.ReportPortalConfiguration.GeneralConfiguration.LibraryPath);
                 _testNestingEnabled = isTestNestingEnabled;
                 DebugLogger.Message("testNestingEnabled: " + _testNestingEnabled);
                 _lId = null;
@@ -45,22 +43,14 @@ namespace ReportPortal.Addins.RPC.COM
                 
                 SuiteMap = new SortedDictionary<string, string>(new LengthComparer());
 
-                try
-                {
-                    _reportPortal = new Service(
-                        new Uri(Configuration.ReportPortalConfiguration.ServerConfiguration.Url),
-                        Configuration.ReportPortalConfiguration.ServerConfiguration.Project,
-                        Configuration.ReportPortalConfiguration.ServerConfiguration.Password,
-                        TryToCreateProxyServer());
+                _reportPortal = new Service(
+                    new Uri(Configuration.ReportPortalConfiguration.ServerConfiguration.Url),
+                    Configuration.ReportPortalConfiguration.ServerConfiguration.Project,
+                    Configuration.ReportPortalConfiguration.ServerConfiguration.Password,
+                    TryToCreateProxyServer());
 
-                    ReportSuccess();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    ReportError("Init", ex);
-                    return false;
-                }
+                ReportSuccess();
+                return true;
             }
             catch (Exception ex)
             {
@@ -148,7 +138,6 @@ namespace ReportPortal.Addins.RPC.COM
                 if (string.IsNullOrEmpty(_testId))
                 {
                     _testId = res.Id;
-                    //testName = testFullName;
                 }
                 DebugLogger.Message("StartTest: " + testFullName + "(" + _testId + ")");
                 ReportSuccess();
@@ -296,8 +285,7 @@ namespace ReportPortal.Addins.RPC.COM
                 Type = TestItemType.Suite
             };
             var res = _reportPortal.StartTestItem(parentSuite, startTestItemRequest);
-
-            var suiteId = (string)res.GetType().GetProperty("Id")?.GetValue(res);
+            var suiteId = res.Id;
             DebugLogger.Message("StartSuite: " + suiteName + " (" + suiteId + "). parentSuite: " + parentSuite);
             return suiteId;
         }
@@ -331,6 +319,4 @@ namespace ReportPortal.Addins.RPC.COM
             return proxy;
         }
     }
-
-    //Rest
 }

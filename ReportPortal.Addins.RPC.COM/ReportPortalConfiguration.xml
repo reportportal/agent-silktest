@@ -3,7 +3,6 @@
   <GeneralConfiguration>
     <LogFile>C:\RPLogXML.txt</LogFile>
     <DebugMode>true</DebugMode>
-    <LibraryPath>c:\...\EPAM.ReportPortal.Client.DLL</LibraryPath>
   </GeneralConfiguration>
   <LaunchConfiguration>
     <LaunchName>LaunchName</LaunchName>
