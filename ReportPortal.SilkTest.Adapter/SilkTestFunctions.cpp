@@ -38,7 +38,7 @@ bool Init(bool isTestNestingEnabled)
 	return false;
 }
 
-bool AddLogItem(wchar_t* logMessage, int logLevel)
+bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel)
 {
 	try
 	{
@@ -63,7 +63,7 @@ bool StartTest(wchar_t* testFullName)
 	}
 	return false;
 }
-bool FinishTest(int testOutcome, wchar_t* testFullName)
+bool FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName)
 {
 	try
 	{

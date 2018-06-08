@@ -31,16 +31,16 @@ bool CReportPortalPublisher::Init(bool isTestNestingEnabled)
 	return false;
 }
 
-bool CReportPortalPublisher::AddLogItem(wchar_t* logMessage, int silkTestLogLevel)
+bool CReportPortalPublisher::AddLogItem(wchar_t* logMessage, SilkTestLogLevel silkTestLogLevel)
 {
 	LogLevel logLevel;
 	switch (silkTestLogLevel)
 	{
-		case 1: logLevel = LogLevel_Info;   break;
-		case 2: logLevel = LogLevel_Warning;break;
-		case 3: logLevel = LogLevel_Error;	break;
-		case 6: logLevel = LogLevel_Trace;	break;
-		case 7: logLevel = LogLevel_Debug;	break;
+		case SilkTestLogLevel_Info:		logLevel = LogLevel_Info;   break;
+		case SilkTestLogLevel_Warning:	logLevel = LogLevel_Warning;break;
+		case SilkTestLogLevel_Error:	logLevel = LogLevel_Error;	break;
+		case SilkTestLogLevel_Trace:	logLevel = LogLevel_Trace;	break;
+		case SilkTestLogLevel_Debug:	logLevel = LogLevel_Debug;	break;
 		default: throw std::exception("Unknown log level");
 	}										
 	
@@ -68,16 +68,16 @@ bool CReportPortalPublisher::StartTest(wchar_t* testFullName)
 	return false;
 }
 
-bool CReportPortalPublisher::FinishTest(int testOutcome, wchar_t* testFullName)
+bool CReportPortalPublisher::FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName)
 {
 	Status status;
 	switch (testOutcome)
 	{
-		case 3: status = Status_Failed;
-		case 1: status = Status_Passed;
-		case 2: status = Status_Passed;
-		case 9: status = Status_None;
-		case 0: status = Status_None;
+		case SilkTestTestStatus_Failed:		status = Status_Failed; break; 
+		case SilkTestTestStatus_Passed1:	status = Status_Passed; break;
+		case SilkTestTestStatus_Passed2:	status = Status_Passed;	break;
+		case SilkTestTestStatus_None1:		status = Status_None;	break;
+		case SilkTestTestStatus_None2:		status = Status_None;	break;
 		default: throw std::exception("Unknown test result");
 	}
 	
