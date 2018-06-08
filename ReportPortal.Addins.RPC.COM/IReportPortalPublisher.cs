@@ -21,7 +21,7 @@ namespace ReportPortal.Addins.RPC.COM
         bool FinishLaunch();
 
         [DispId(6)]
-        bool FinishTest(Status testOutcome, string testFullName = null);
+        bool FinishTest(string testFullName, Status withStatus, bool forceToFinishNestedSteps);
 
         [DispId(7)]
         string GetLastError();

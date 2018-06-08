@@ -8,11 +8,10 @@ namespace ReportPortal.Addins.RPC.COM
     ]
     public enum LogLevel
     {
-        None = EPAM.ReportPortal.Client.Models.LogLevel.None,
-        Trace = EPAM.ReportPortal.Client.Models.LogLevel.Trace, //
-        Debug = EPAM.ReportPortal.Client.Models.LogLevel.Debug, //
-        Info = EPAM.ReportPortal.Client.Models.LogLevel.Info, //
-        Warning = EPAM.ReportPortal.Client.Models.LogLevel.Warning, //
-        Error = EPAM.ReportPortal.Client.Models.LogLevel.Error //
+        Trace = Client.Models.LogLevel.Trace, //
+        Debug = Client.Models.LogLevel.Debug, //
+        Info = Client.Models.LogLevel.Info, //
+        Warning = Client.Models.LogLevel.Warning, //
+        Error = Client.Models.LogLevel.Error //
     }
 }

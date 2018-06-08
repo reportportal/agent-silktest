@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <ReportPortalConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GeneralConfiguration>
-    <LogFile>C:\RPLogXML.txt</LogFile>
     <DebugMode>true</DebugMode>
   </GeneralConfiguration>
   <LaunchConfiguration>

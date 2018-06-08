@@ -68,7 +68,7 @@ bool CReportPortalPublisher::StartTest(wchar_t* testFullName)
 	return false;
 }
 
-bool CReportPortalPublisher::FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName)
+bool CReportPortalPublisher::FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps)
 {
 	Status status;
 	switch (testOutcome)
@@ -76,14 +76,12 @@ bool CReportPortalPublisher::FinishTest(SilkTestTestStatus testOutcome, wchar_t*
 		case SilkTestTestStatus_Failed:		status = Status_Failed; break; 
 		case SilkTestTestStatus_Passed1:	status = Status_Passed; break;
 		case SilkTestTestStatus_Passed2:	status = Status_Passed;	break;
-		case SilkTestTestStatus_None1:		status = Status_None;	break;
-		case SilkTestTestStatus_None2:		status = Status_None;	break;
 		default: throw std::exception("Unknown test result");
 	}
 	
 	_bstr_t comString = testFullName;
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->FinishTest(status, comString, &ret);
+	HRESULT hr = _reportPortalPublisherComPtr->FinishTest(comString, status, forceToFinishNestedSteps, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;

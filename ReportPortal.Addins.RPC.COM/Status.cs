@@ -8,11 +8,10 @@ namespace ReportPortal.Addins.RPC.COM
     ]
     public enum Status
     {
-        None = EPAM.ReportPortal.Client.Models.Status.None,
-        InProgress = EPAM.ReportPortal.Client.Models.Status.InProgress,
-        Passed = EPAM.ReportPortal.Client.Models.Status.Passed,
-        Failed = EPAM.ReportPortal.Client.Models.Status.Failed,
-        Skipped = EPAM.ReportPortal.Client.Models.Status.Skipped,
-        Interrupted = EPAM.ReportPortal.Client.Models.Status.Interrupted
+        InProgress = Client.Models.Status.InProgress,
+        Passed = Client.Models.Status.Passed,
+        Failed = Client.Models.Status.Failed,
+        Skipped = Client.Models.Status.Skipped,
+        Interrupted = Client.Models.Status.Interrupted
     }
 }

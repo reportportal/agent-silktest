@@ -20,9 +20,9 @@ namespace TestRP
                 reportPortal.AddLogItem("LogLevel.Debug;", LogLevel.Trace);
 
                 reportPortal.StartTest("TestG1:TestG2:Test2");
-                reportPortal.FinishTest(Status.Passed, "TestG1:TestG2:Test2");
+                reportPortal.FinishTest("TestG1:TestG2:Test2", Status.Passed, false);
 
-                reportPortal.FinishTest(Status.Passed);
+                reportPortal.FinishTest("TestG1:TestG2:Test", Status.Passed, false);
                 reportPortal.FinishLaunch();
             }
         }

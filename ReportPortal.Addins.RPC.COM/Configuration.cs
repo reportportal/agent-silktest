@@ -52,7 +52,6 @@ namespace ReportPortal.Addins.RPC.COM
     [Serializable]
     public class GeneralConfiguration
     {
-        public string LogFile { get; set; }
         public bool DebugMode { get; set; }
         public ProxyConfiguration ProxyConfiguration { get; set; }
     }

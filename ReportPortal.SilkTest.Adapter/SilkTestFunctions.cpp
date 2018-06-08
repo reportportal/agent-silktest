@@ -63,11 +63,11 @@ bool StartTest(wchar_t* testFullName)
 	}
 	return false;
 }
-bool FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName)
+bool FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName, bool forceToFinishNestedSteps)
 {
 	try
 	{
-		return ReportPortalPublisherComWrapper.FinishTest(testOutcome, testFullName);
+		return ReportPortalPublisherComWrapper.FinishTest(testFullName, testOutcome, forceToFinishNestedSteps);
 	}
 	catch (const std::exception& ex)
 	{

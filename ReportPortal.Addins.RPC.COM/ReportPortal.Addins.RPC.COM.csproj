@@ -78,13 +78,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EPAM.ReportPortal.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDependencies\EPAM.ReportPortal.Client.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDependencies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ReportPortal.Client">
+      <HintPath>ExternalDependencies\ReportPortal.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ReportPortal.Shared">
+      <HintPath>ExternalDependencies\ReportPortal.Shared.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -108,9 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
-    <Compile Include="DebugLogger.cs" />
     <Compile Include="IReportPortalPublisher.cs" />
-    <Compile Include="LengthComparer.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="ReportPortalPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,15 +123,8 @@
     <None Include="ReportPortal.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ExternalDependencies\EPAM.ReportPortal.Client.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExternalDependencies\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExternalDependencies\RestSharp.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="ExternalDependencies\ReportPortal.Client.dll" />
+    <Content Include="ExternalDependencies\ReportPortal.Shared.dll" />
     <Content Include="ReportPortalConfiguration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
