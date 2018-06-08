@@ -63,7 +63,7 @@ bool StartTest(wchar_t* testFullName)
 	}
 	return false;
 }
-bool FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName, bool forceToFinishNestedSteps)
+bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps)
 {
 	try
 	{

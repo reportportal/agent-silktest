@@ -22,7 +22,7 @@ extern "C"
 	__declspec (dllexport) bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel);
 
 	__declspec (dllexport) bool StartTest(wchar_t* testFullName);
-	__declspec (dllexport) bool FinishTest(SilkTestTestStatus testOutcome, wchar_t* testFullName, bool forceToFinishNestedSteps);
+	__declspec (dllexport) bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);
 
 	__declspec (dllexport) bool StartLaunch();
 	__declspec (dllexport) bool FinishLaunch();

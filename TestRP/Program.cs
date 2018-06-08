@@ -20,6 +20,7 @@ namespace TestRP
                 reportPortal.AddLogItem("LogLevel.Debug;", LogLevel.Trace);
 
                 reportPortal.StartTest("TestG1:TestG2:Test2");
+                reportPortal.AddLogItem("LogLevel.Trace;", LogLevel.Trace);
                 reportPortal.FinishTest("TestG1:TestG2:Test2", Status.Passed, false);
 
                 reportPortal.FinishTest("TestG1:TestG2:Test", Status.Passed, false);
