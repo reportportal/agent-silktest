@@ -14,7 +14,7 @@ void DisplayLastError();
 int main()
 {
 	
-	bool result = Init(false);
+	bool result = Init();
 	if (!result)
 	{
 		DisplayLastError();

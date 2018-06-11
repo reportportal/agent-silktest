@@ -9,7 +9,7 @@ namespace ReportPortal.Addins.RPC.COM
     public interface IReportPortalPublisher
     {
         [DispId(1)]
-        bool Init(bool isTestNestingEnabled);
+        bool Init();
         [DispId(2)]
         bool AddLogItem(string logMessage, LogLevel logLevel);
         [DispId(3)]

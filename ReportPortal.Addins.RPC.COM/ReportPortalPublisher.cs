@@ -21,20 +21,15 @@ namespace ReportPortal.Addins.RPC.COM
     public class ReportPortalPublisher : IReportPortalPublisher
     {
         private const char Separator = ':';
-        private string _testId;
-        private bool _testNestingEnabled;
         private string _lastError = string.Empty;
         private LaunchReporter _launchReporter;
         private readonly List<Tuple<string, TestReporter>> _reporters = new List<Tuple<string, TestReporter>>();
         
 
-        public bool Init(bool isTestNestingEnabled)
+        public bool Init()
         {
             try
-            {
-                _testNestingEnabled = isTestNestingEnabled;
-                _testId = null;
-
+            {                
                 var reportPortalService = new Service(
                     new Uri(Configuration.ReportPortalConfiguration.ServerConfiguration.Url),
                     Configuration.ReportPortalConfiguration.ServerConfiguration.Project,
@@ -78,13 +73,6 @@ namespace ReportPortal.Addins.RPC.COM
         {
             try
             {
-                if (!string.IsNullOrEmpty(_testId) && _testNestingEnabled)
-                {
-                    AddLogItemToReportPortal("Starting nested test case: " + testFullName, LogLevel.Info);
-                    ReportSuccess(nameof(StartTest));
-                    return true;
-                }
-
                 var path = testFullName.Split(Separator).ToList();
                 var testName = path[path.Count - 1];
 
@@ -248,7 +236,6 @@ namespace ReportPortal.Addins.RPC.COM
         {
             var addLogItemRequest = new AddLogItemRequest()
             {
-                TestItemId =  _testId,
                 Level = (Client.Models.LogLevel)logLevel,
                 Time =  DateTime.UtcNow,
                 Text = logMessage

@@ -17,7 +17,7 @@ const SilkTestTestStatus SilkTestTestStatus_Passed2 = 2;
 
 extern "C"
 {
-	__declspec (dllexport) bool Init(bool isTestNestingEnabled);
+	__declspec (dllexport) bool Init();
 
 	__declspec (dllexport) bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel);
 

@@ -12,13 +12,13 @@ inline std::wstring ConvertToWstring(const char* message)
 	return wstr;
 }
 
-bool Init(bool isTestNestingEnabled)
+bool Init()
 {
 	using namespace std;
 	try
 	{
 		ReportPortalPublisherComWrapper = CReportPortalPublisher(IReportPortalPublisherPtr(__uuidof(ReportPortalPublisher)));
-		return ReportPortalPublisherComWrapper.Init(isTestNestingEnabled);
+		return ReportPortalPublisherComWrapper.Init();
 	}
 	catch (_com_error& ex)
 	{

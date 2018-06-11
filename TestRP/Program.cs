@@ -7,7 +7,7 @@ namespace TestRP
         private static void Main(string[] args)
         {
             var reportPortal = new ReportPortalPublisher();
-            if (reportPortal.Init(false))
+            if (reportPortal.Init())
             {
                 reportPortal.StartLaunch();
                 reportPortal.StartTest("TestG1:TestG2:Test");

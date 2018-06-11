@@ -19,10 +19,10 @@ CReportPortalPublisher::~CReportPortalPublisher()
 {
 }
 
-bool CReportPortalPublisher::Init(bool isTestNestingEnabled)
+bool CReportPortalPublisher::Init()
 {
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->Init((VARIANT_BOOL)isTestNestingEnabled, &ret);
+	HRESULT hr = _reportPortalPublisherComPtr->Init(&ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;

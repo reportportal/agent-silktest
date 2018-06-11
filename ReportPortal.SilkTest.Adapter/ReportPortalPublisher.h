@@ -14,7 +14,7 @@ public:
 	~CReportPortalPublisher();
 
 public: // wrap methods
-	bool Init(bool isTestNestingEnabled);
+	bool Init();
 
 	bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel);
 
