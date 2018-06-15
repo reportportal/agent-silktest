@@ -18,23 +18,36 @@ namespace ReportPortal.Addins.RPC.COM
         ClassInterface(ClassInterfaceType.None),
         ComDefaultInterface(typeof(IReportPortalPublisher))
     ]
-    public class ReportPortalPublisher : IReportPortalPublisher
+    public class ReportPortalPublisher : IReportPortalPublisher, ITestable
     {
         private const char Separator = ':';
         private string _lastError = string.Empty;
         private LaunchReporter _launchReporter;
         private readonly List<Tuple<string, TestReporter>> _reporters = new List<Tuple<string, TestReporter>>();
-        
+        private readonly IConfiguration _configuration;
+
+
+        public ReportPortalPublisher() : this(new Configuration())
+        {
+
+        }
+
+        public ReportPortalPublisher(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        #region ITestable
+        string ITestable.FullTestName => string.Join(Separator.ToString(), _reporters.Select(x => x.Item1));
+        IEnumerable<string> ITestable.Hierarchy => _reporters.Select(x => x.Item1);
+        #endregion
 
         public bool Init()
         {
             try
             {                
-                var reportPortalService = new Service(
-                    new Uri(Configuration.ReportPortalConfiguration.ServerConfiguration.Url),
-                    Configuration.ReportPortalConfiguration.ServerConfiguration.Project,
-                    Configuration.ReportPortalConfiguration.ServerConfiguration.Password,
-                    TryToCreateProxyServer());
+                var reportPortalService = new Service(new Uri(_configuration.ServerUrl), _configuration.ServerProjectName,
+                    _configuration.ServerPassword, TryToCreateProxyServer());
 
                 _launchReporter = new LaunchReporter(reportPortalService);
 
@@ -54,9 +67,9 @@ namespace ReportPortal.Addins.RPC.COM
             {
                 var launchRequest = new StartLaunchRequest()
                 {
-                    Name = Configuration.ReportPortalConfiguration.LaunchConfiguration.LaunchName,
+                    Name = _configuration.LaunchName,
                     StartTime = DateTime.UtcNow,
-                    Mode = Configuration.ReportPortalConfiguration.LaunchConfiguration.DebugMode? LaunchMode.Debug : LaunchMode.Default
+                    Mode = _configuration.LaunchMode
                 };
                 
                 _launchReporter.Start(launchRequest);
@@ -243,17 +256,16 @@ namespace ReportPortal.Addins.RPC.COM
             _reporters[_reporters.Count - 1].Item2.Log(addLogItemRequest);
         }
         
-        private static IWebProxy TryToCreateProxyServer()
+        private IWebProxy TryToCreateProxyServer()
         {
             IWebProxy proxy = null;
-            var proxyConfig = Configuration.ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration;
-            if (proxyConfig != null)
+            if (_configuration.ProxyAvailable)
             {
-                proxy = new WebProxy(proxyConfig.Server);
-                if (!string.IsNullOrEmpty(proxyConfig.Username) && !string.IsNullOrEmpty(proxyConfig.Password))
-                    proxy.Credentials = string.IsNullOrEmpty(proxyConfig.Domain) == false
-                        ? new NetworkCredential(proxyConfig.Username, proxyConfig.Password, proxyConfig.Domain)
-                        : new NetworkCredential(proxyConfig.Username, proxyConfig.Password);
+                proxy = new WebProxy(_configuration.ProxyServer);
+                if (!string.IsNullOrEmpty(_configuration.ProxyUser) && !string.IsNullOrEmpty(_configuration.ProxyPassword))
+                    proxy.Credentials = !string.IsNullOrEmpty(_configuration.ProxyDomain)
+                        ? new NetworkCredential(_configuration.ProxyUser, _configuration.ProxyPassword, _configuration.ProxyDomain)
+                        : new NetworkCredential(_configuration.ProxyUser, _configuration.ProxyPassword);
             }
             return proxy;
         }

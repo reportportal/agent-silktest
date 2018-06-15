@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="IReportPortalPublisher.cs" />
+    <Compile Include="ITestable.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="ReportPortalPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
