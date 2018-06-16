@@ -110,9 +110,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Configuration\GeneralConfiguration.cs" />
+    <Compile Include="Configuration\LaunchConfiguration.cs" />
+    <Compile Include="Configuration\ProxyConfiguration.cs" />
+    <Compile Include="Configuration\ServerConfiguration.cs" />
+    <Compile Include="IConfiguration.cs" />
     <Compile Include="IReportPortalPublisher.cs" />
     <Compile Include="ITestable.cs" />
     <Compile Include="LogLevel.cs" />
+    <Compile Include="Configuration\ReportPortalConfiguration.cs" />
     <Compile Include="ReportPortalPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />

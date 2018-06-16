@@ -1,29 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 
 namespace ReportPortal.Addins.RPC.COM
 {
-    [ComVisible(false)]
-    public interface IConfiguration
-    {
-        string ServerUrl { get; }
-        string ServerProjectName { get; }
-        string ServerPassword { get; }
-
-        string LaunchName { get; }
-        Client.Models.LaunchMode LaunchMode { get; }
-
-        bool ProxyAvailable { get; }
-        string ProxyDomain { get; }
-        string ProxyServer { get; }
-        string ProxyUser { get; }
-        string ProxyPassword { get; }
-
-    }
-
     [ComVisible(false)]
     public class Configuration : IConfiguration
 
@@ -58,51 +39,5 @@ namespace ReportPortal.Addins.RPC.COM
         public string ProxyServer => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Server;
         public string ProxyUser => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Username;
         public string ProxyPassword => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Password;
-    }
-
-    [ComVisible(false)]
-    [Serializable]
-    public class ReportPortalConfiguration
-    {
-        public GeneralConfiguration GeneralConfiguration { get; set; }
-        public LaunchConfiguration LaunchConfiguration { get; set; }
-        public ServerConfiguration ServerConfiguration { get; set; }
-    }
-
-    [ComVisible(false)]
-    [Serializable]
-    public class GeneralConfiguration
-    {
-        public bool DebugMode { get; set; }
-        public ProxyConfiguration ProxyConfiguration { get; set; }
-    }
-
-    [ComVisible(false)]
-    [Serializable]
-    public class LaunchConfiguration
-    {
-        public string LaunchName { get; set; }
-        public bool DebugMode { get; set; }
-        public string Tags { get; set; }
-    }
-
-    [ComVisible(false)]
-    [Serializable]
-    public class ServerConfiguration
-    {
-        public string Url { get; set; }
-        public string Project { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
-    [ComVisible(false)]
-    [Serializable]
-    public class ProxyConfiguration
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Domain { get; set; }
-        public string Server { get; set; }
     }
 }
