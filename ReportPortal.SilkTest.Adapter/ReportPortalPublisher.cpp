@@ -31,7 +31,7 @@ bool CReportPortalPublisher::Init()
 	return false;
 }
 
-bool CReportPortalPublisher::AddLogItem(wchar_t* logMessage, SilkTestLogLevel silkTestLogLevel)
+bool CReportPortalPublisher::AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel silkTestLogLevel)
 {
 	LogLevel logLevel;
 	switch (silkTestLogLevel)
@@ -46,7 +46,7 @@ bool CReportPortalPublisher::AddLogItem(wchar_t* logMessage, SilkTestLogLevel si
 	
 	_bstr_t comString = logMessage;
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->AddLogItem(comString, logLevel, &ret);
+	HRESULT hr = _reportPortalPublisherComPtr->AddLogItem(testFullName, comString, logLevel, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;

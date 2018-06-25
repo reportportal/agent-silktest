@@ -147,17 +147,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 var res = _rpProxy.Publisher.StartTest(name);
 
                 Assert.IsTrue(res);
-                Assert.AreEqual(name, _rpProxy.TestMe.FullTestName);
-            }
-
-            [Test]
-            [TestCase("A:B:C:D")]
-            public void EnsureThatHierarchyIsTheSame(string name)
-            {
-                var res = _rpProxy.Publisher.StartTest(name);
-
-                Assert.IsTrue(res);
-                Assert.That(name.Split(':'), Is.EquivalentTo(_rpProxy.TestMe.Hierarchy));
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(name));
             }
 
 
@@ -169,26 +159,41 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 _rpProxy.Publisher.StartTest(parent);
 
                 _rpProxy.Publisher.StartTest(child);
-                    
-                Assert.AreEqual(child, _rpProxy.TestMe.FullTestName);
+
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(child));
             }
 
             [Test]
-            [TestCase("A:B:C", "A:B:C")]
             [TestCase("A:B:C", "A:B:D")]
             [TestCase("A:B:C", "A:D")]
             [TestCase("A:B:C", "A:D:E")]
             [TestCase("A:B:C", "D")]
             [TestCase("A:B:C", "D:E")]
-            public void EnsureThatIsNotPossibleToSiblins(string parent, string child)
+            public void EnsureThatIsPossibleToAddSiblins(string firstTest, string secondTest)
             {
-                _rpProxy.Publisher.StartTest(parent);
+                _rpProxy.Publisher.StartTest(firstTest);
 
-                var res = _rpProxy.Publisher.StartTest(child);
+                var res = _rpProxy.Publisher.StartTest(secondTest);
 
-                Assert.IsFalse(res);
-                Assert.AreEqual(parent, _rpProxy.TestMe.FullTestName);
+                Assert.IsTrue(res);
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(firstTest));
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(secondTest));
             }
+            [Test]
+            [TestCase("A", "A")]
+            [TestCase("A:B", "A:B")]
+            [TestCase("A:B:C", "A:B:C")]
+            public void EnsureThatDublicatesAreReused(string firstTest, string secondTest)
+            {
+                _rpProxy.Publisher.StartTest(firstTest);
+
+                var res = _rpProxy.Publisher.StartTest(secondTest);
+
+                Assert.IsTrue(res);
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(firstTest));
+                Assert.AreEqual(1, _rpProxy.TestMe.RunningTests.Count());
+            }
+
         }
 
         public class FinishTest
@@ -209,7 +214,6 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             }
 
             [Test]
-            [TestCase("A", "")]
             [TestCase("A:B", "A")]
             [TestCase("A:B:C:D", "A:B:C")]
             public void EnsureThatTestIsFinished(string name, string expectedName)
@@ -219,7 +223,20 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 var res = _rpProxy.Publisher.FinishTest(name, Status.Passed, false);
 
                 Assert.IsTrue(res);
-                Assert.AreEqual(expectedName, _rpProxy.TestMe.FullTestName);
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x=>x.FullName), Has.No.Member(name));
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(expectedName));
+            }
+
+            [Test]
+            public void EnsureThatRootTestIsFinished()
+            {
+                const string name = "A";
+                _rpProxy.Publisher.StartTest(name);
+
+                var res = _rpProxy.Publisher.FinishTest(name, Status.Passed, false);
+
+                Assert.IsTrue(res);
+                Assert.IsEmpty(_rpProxy.TestMe.RunningTests);
             }
 
 
@@ -238,18 +255,28 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             }
 
             [Test]
-            [TestCase("A:B", "A", true, "")]
-            [TestCase("A:B", "A", false, "A:B")]
-            [TestCase("A:B:C:D", "A:B", true, "A")]
-            [TestCase("A:B:C:D", "A:B", false, "A:B:C:D")]
-            public void EnsureThatParentSuiteFinishedCorrectly(string testName, string suiteToClose, bool forceClose, string expectedResult)
+            [TestCase("A:B", "A", new string[0])]
+            [TestCase("A:B:C:D", "A:B", new[] {"A"})]
+            public void EnsureThatSetIsClosed(string testName, string suiteToClose, string[] expectedResult)
             {
                 _rpProxy.Publisher.StartTest(testName);
 
-                _rpProxy.Publisher.FinishTest(suiteToClose, Status.Passed, forceClose);
+                _rpProxy.Publisher.FinishTest(suiteToClose, Status.Passed, true);
 
-                Assert.AreEqual(expectedResult, _rpProxy.TestMe.FullTestName);
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x=>x.FullName), Is.EquivalentTo(expectedResult));
             }
+            [Test]
+            [TestCase("A:B", "A")]
+            [TestCase("A:B:C:D", "A:B")]
+            public void EnsureThatSetIsNotClosed(string testName, string suiteToClose)
+            {
+                _rpProxy.Publisher.StartTest(testName);
+
+                _rpProxy.Publisher.FinishTest(suiteToClose, Status.Passed, false);
+
+                Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(testName));
+            }
+
         }
 
         public class FinishLaunch
@@ -276,7 +303,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 var res = _rpProxy.Publisher.FinishLaunch();
 
                 Assert.IsTrue(res);
-                Assert.IsEmpty(_rpProxy.TestMe.FullTestName);
+                Assert.That(_rpProxy.TestMe.RunningTests, Is.Empty);
 
                 _rpProxy.Reset();
             }
@@ -301,9 +328,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [Test]
             public void EnsureThatLogItemSentToReportPortal()
             {
-                _rpProxy.Publisher.StartTest("A:B:C:D");
+                var testName = "A:B:C:D";
+                _rpProxy.Publisher.StartTest(testName);
 
-                var res = _rpProxy.Publisher.AddLogItem("message", LogLevel.Info);
+                var res = _rpProxy.Publisher.AddLogItem(testName, "message", LogLevel.Info);
 
                 Assert.IsTrue(res);
             }
@@ -311,7 +339,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [Test]
             public void EnsureThatLogItemIsNotSentIfNoReporters()
             {
-                var res = _rpProxy.Publisher.AddLogItem("message", LogLevel.Info);
+                var res = _rpProxy.Publisher.AddLogItem("A", "message", LogLevel.Info);
 
                 Assert.IsFalse(res);
             }

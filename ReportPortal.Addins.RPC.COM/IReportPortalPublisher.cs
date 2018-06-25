@@ -11,7 +11,7 @@ namespace ReportPortal.Addins.RPC.COM
         [DispId(1)]
         bool Init();
         [DispId(2)]
-        bool AddLogItem(string logMessage, LogLevel logLevel);
+        bool AddLogItem(string testFullName, string logMessage, LogLevel logLevel);
         [DispId(3)]
         bool StartLaunch();
 

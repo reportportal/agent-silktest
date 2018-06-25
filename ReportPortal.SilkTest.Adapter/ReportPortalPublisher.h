@@ -16,7 +16,7 @@ public:
 public: // wrap methods
 	bool Init();
 
-	bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel);
+	bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel logLevel);
 
 	bool StartTest(wchar_t* testFullName);
 	bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);

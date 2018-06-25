@@ -38,11 +38,11 @@ bool Init()
 	return false;
 }
 
-bool AddLogItem(wchar_t* logMessage, SilkTestLogLevel logLevel)
+bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel logLevel)
 {
 	try
 	{
-		return ReportPortalPublisherComWrapper.AddLogItem(logMessage, logLevel);
+		return ReportPortalPublisherComWrapper.AddLogItem(testFullName, logMessage, logLevel);
 	}
 	catch (const std::exception& ex)
 	{

@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace ReportPortal.Addins.RPC.COM.Tests
 {
@@ -14,14 +13,15 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
 
                 for (int i = 0; i < 100 && result; i++)
                 {
-                    result &= rp.Publisher.AddLogItem($"Foo {i}", LogLevel.Info);
+                    result &= rp.Publisher.AddLogItem(testName, $"Foo {i}", LogLevel.Info);
                 }
 
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true);    // finish req ID
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true);    // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true);    // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true);    // finish script
                 result &= result && rp.Publisher.FinishTest("PlanOne", Status.Passed, true);  // finish plan
@@ -41,10 +41,11 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Warning);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true);    // finish req ID
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
+                result &= result && rp.Publisher.AddLogItem(testName, "bar", LogLevel.Warning);
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true);    // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true);    // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true);    // finish script
                 result &= result && rp.Publisher.FinishTest("PlanOne", Status.Passed, true);  // finish plan
@@ -63,13 +64,15 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true); // finish req ID
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId02");
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId02", Status.Passed, true); // finish req ID
+                var testName2 = "PlanOne:ScriptRed:TestCaseXXX:ReqId02";
+                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
@@ -91,15 +94,17 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId02");
+                var testName2 = "PlanOne:ScriptRed:TestCaseXXX:ReqId02";
+                result &= result && rp.Publisher.StartTest(testName2);
 
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Info);
+                result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
 
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true); // finish req ID
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId02", Status.Passed, true); // finish req ID
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
+                result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
@@ -119,14 +124,16 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true); // finish req ID
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseYYY:ReqId02");
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseYYY:ReqId02", Status.Passed, true); // finish req ID
+                var testName2 = "PlanOne:ScriptRed:TestCaseYYY:ReqId02";
+                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
                           
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseYYY", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
@@ -146,15 +153,17 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true); // finish req ID
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptBlue:TestCaseYYY:ReqId02");
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptBlue:TestCaseYYY:ReqId02", Status.Passed, true); // finish req ID
+                var testName2 = "PlanOne:ScriptBlue:TestCaseYYY:ReqId02";
+                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptBlue:TestCaseYYY", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptBlue", Status.Passed, true); // finish script
@@ -174,16 +183,18 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 bool result = rp.Publisher.Init();
                 result &= result && rp.Publisher.StartLaunch();
 
-                result &= result && rp.Publisher.StartTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01");
-                result &= result && rp.Publisher.AddLogItem("foo", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX:ReqId01", Status.Passed, true); // finish req ID
+                var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
+                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
                 result &= result && rp.Publisher.FinishTest("PlanOne", Status.Passed, true); // finish plan
 
-                result &= result && rp.Publisher.StartTest("PlanTwo:ScriptBlue:TestCaseYYY:ReqId02");
-                result &= result && rp.Publisher.AddLogItem("bar", LogLevel.Info);
-                result &= result && rp.Publisher.FinishTest("PlanTwo:ScriptBlue:TestCaseYYY:ReqId02", Status.Passed, true); // finish req ID
+                var testName2 = "PlanTwo:ScriptBlue:TestCaseYYY:ReqId02";
+                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
+                result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
                 result &= result && rp.Publisher.FinishTest("PlanTwo:ScriptBlue:TestCaseYYY", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanTwo:ScriptBlue", Status.Passed, true); // finish script

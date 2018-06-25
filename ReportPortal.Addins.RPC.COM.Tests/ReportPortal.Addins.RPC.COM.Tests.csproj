@@ -50,6 +50,10 @@
     <Reference Include="ReportPortal.Client">
       <HintPath>..\ReportPortal.Addins.RPC.COM\ExternalDependencies\ReportPortal.Client.dll</HintPath>
     </Reference>
+    <Reference Include="ReportPortal.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a0172f89dd59e694, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ReportPortal.Addins.RPC.COM\ExternalDependencies\ReportPortal.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

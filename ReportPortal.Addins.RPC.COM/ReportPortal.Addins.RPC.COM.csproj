@@ -78,23 +78,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDependencies\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="ReportPortal.Client">
       <HintPath>ExternalDependencies\ReportPortal.Client.dll</HintPath>
     </Reference>
     <Reference Include="ReportPortal.Shared">
       <HintPath>ExternalDependencies\ReportPortal.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDependencies\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration">
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
@@ -105,15 +97,20 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Serialization">
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTypes\ConcurrentTree.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Configuration\GeneralConfiguration.cs" />
     <Compile Include="Configuration\LaunchConfiguration.cs" />
     <Compile Include="Configuration\ProxyConfiguration.cs" />
     <Compile Include="Configuration\ServerConfiguration.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="DataTypes\ConcurrentTreeNode.cs" />
+    <Compile Include="DataTypes\IEditableNode.cs" />
+    <Compile Include="DataTypes\IReadonlyNode.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IReportPortalPublisher.cs" />
     <Compile Include="ITestable.cs" />

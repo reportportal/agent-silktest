@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using ReportPortal.Addins.RPC.COM.DataTypes;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
@@ -20,16 +20,14 @@ namespace ReportPortal.Addins.RPC.COM
     ]
     public class ReportPortalPublisher : IReportPortalPublisher, ITestable
     {
-        private const char Separator = ':';
         private string _lastError = string.Empty;
         private LaunchReporter _launchReporter;
-        private readonly List<Tuple<string, TestReporter>> _reporters = new List<Tuple<string, TestReporter>>();
         private readonly IConfiguration _configuration;
+        private readonly ConcurrentTree<TestReporter> _concurrentTree = new ConcurrentTree<TestReporter>();
 
 
         public ReportPortalPublisher() : this(new Configuration())
         {
-
         }
 
         public ReportPortalPublisher(IConfiguration configuration)
@@ -38,8 +36,11 @@ namespace ReportPortal.Addins.RPC.COM
         }
 
         #region ITestable
-        string ITestable.FullTestName => string.Join(Separator.ToString(), _reporters.Select(x => x.Item1));
-        IEnumerable<string> ITestable.Hierarchy => _reporters.Select(x => x.Item1);
+
+        public IEnumerable<IReadonlyNode<TestReporter>> RunningTests => _concurrentTree.RunningTests;
+
+            //string ITestable.FullTestName => string.Join(Separator.ToString(), _concurrentTree._reporters.Select(x => x.Item1));
+        //IEnumerable<string> ITestable.Hierarchy => _concurrentTree._reporters.Select(x => x.Item1);
         #endregion
 
         public bool Init()
@@ -86,50 +87,7 @@ namespace ReportPortal.Addins.RPC.COM
         {
             try
             {
-                var path = testFullName.Split(Separator).ToList();
-                var testName = path[path.Count - 1];
-
-                var suiteLength = path.Count - 1;
-                if (_reporters.Count == 0)
-                {
-                    for (int i = 0; i < suiteLength; ++i)
-                    {
-                        AddTestReporter(path[i], TestItemType.Suite);
-                    }
-                }
-                else
-                {
-                    Func<string> makePath = () => string.Join(Separator.ToString(), _reporters.Select(x => x.Item1));
-                    Func<string, string, bool> isEqual = (l, r) => string.Compare(l, r, StringComparison.CurrentCultureIgnoreCase) == 0;
-
-                    if (_reporters.Count > suiteLength)
-                    {
-                        ReportError(nameof(StartTest), $"Unfinished test suite was found. Please review: <{makePath()}>");
-                        return false;
-                    }
-                    var currentSuite = _reporters[_reporters.Count - 1].Item1;
-                    var requestedSuite = path[suiteLength - 1];
-
-                    if (_reporters.Count < suiteLength)
-                    {
-                        var parentPathSuite = path[_reporters.Count - 1];
-
-                        if (isEqual(currentSuite, parentPathSuite))
-                        {
-                            for (int i = _reporters.Count; i < suiteLength; ++i)
-                            {
-                                AddTestReporter(path[i], TestItemType.Suite);
-                            }
-                        }
-                    }else if (!isEqual(currentSuite, requestedSuite))
-                    {
-                        ReportError(nameof(StartTest), $"Cannot start new test suite as long as the previous one is not finished <{makePath()}>.");
-                        return false;
-                    }
-                }
-
-
-                AddTestReporter(testName, TestItemType.Step); 
+                _concurrentTree.AddPath(testFullName, AddTestReporter);
                 ReportSuccess(nameof(StartTest));
                 return true;
             }
@@ -144,31 +102,18 @@ namespace ReportPortal.Addins.RPC.COM
         {
             try
             {
-                string executingTestName = string.Join(Separator.ToString(), _reporters.Select(x => x.Item1));
-                if (string.Compare(executingTestName, testFullName, StringComparison.CurrentCultureIgnoreCase) == 0)
+                var node = _concurrentTree.FindNode(testFullName);
+                if (node == null)
                 {
-                    DeleteTestReporter(_reporters.Count - 1, withStatus);
-                    ReportSuccess(nameof(FinishTest));
-                    return true;
+                    throw new Exception($"Test {testFullName} is not found");
                 }
 
-                var path = testFullName.Split(Separator).ToList();
-
-                if (path.Count >= _reporters.Count)
+                if (!forceToFinishNestedSteps && node.Children.Count > 0)
                 {
-                    ReportError(nameof(FinishTest), $"<{testFullName}> is not found. <{executingTestName}> is running.");
-                    return false;
-                }
-                if (!forceToFinishNestedSteps)
-                {
-                    ReportError(nameof(FinishTest), $"Unfinished nested steps found, please finish them before: <{executingTestName}>");
-                    return false;
+                    throw new Exception($"Unfinished nested steps found, please finish them before: <{node.FullName}>");
                 }
 
-                if (executingTestName.ToLower().Contains(testFullName.ToLower()))
-                {
-                    FinishSuite(path.Count - 1, withStatus);
-                }
+                _concurrentTree.DeleteNodeWithChildren(node, current => DeleteTestReporter(current, withStatus));
 
                 ReportSuccess(nameof(FinishTest));
                 return true;
@@ -184,7 +129,7 @@ namespace ReportPortal.Addins.RPC.COM
         {
             try
             {
-                FinishSuite(0, Status.Passed);
+                _concurrentTree.Clear(current => DeleteTestReporter(current, Status.Passed));
 
                 _launchReporter.Finish(new FinishLaunchRequest() {EndTime = DateTime.UtcNow});
                 _launchReporter.FinishTask.Wait();
@@ -198,11 +143,24 @@ namespace ReportPortal.Addins.RPC.COM
             }
         }
 
-        public bool AddLogItem(string logMessage, LogLevel logLevel)
+        public bool AddLogItem(string testFullName, string logMessage, LogLevel logLevel)
         {
             try
             {
-                AddLogItemToReportPortal(logMessage, logLevel);
+                var test = _concurrentTree.FindNode(testFullName);
+                if (test == null)
+                {
+                    throw new Exception($"{testFullName} is not found");
+                }
+
+                var addLogItemRequest = new AddLogItemRequest()
+                {
+                    Level = (Client.Models.LogLevel)logLevel,
+                    Time = DateTime.UtcNow,
+                    Text = logMessage
+                };
+                test.Value.Log(addLogItemRequest);
+
                 ReportSuccess(nameof(AddLogItem));
                 return true;
             }
@@ -243,18 +201,6 @@ namespace ReportPortal.Addins.RPC.COM
             text.Append("Message: ").Append(message).AppendLine();
             _lastError = text.ToString();
         }
-
-
-        private void AddLogItemToReportPortal(string logMessage, LogLevel logLevel)
-        {
-            var addLogItemRequest = new AddLogItemRequest()
-            {
-                Level = (Client.Models.LogLevel)logLevel,
-                Time =  DateTime.UtcNow,
-                Text = logMessage
-            };
-            _reporters[_reporters.Count - 1].Item2.Log(addLogItemRequest);
-        }
         
         private IWebProxy TryToCreateProxyServer()
         {
@@ -270,37 +216,30 @@ namespace ReportPortal.Addins.RPC.COM
             return proxy;
         }
 
-        private void FinishSuite(int index, Status withStatus)
-        {
-            for (int i = _reporters.Count - 1; i >= index; --i)
-                DeleteTestReporter(i, withStatus);
-        }
-
-        private void AddTestReporter(string name, TestItemType testItemType)
+        private TestReporter AddTestReporter(IReadonlyNode<TestReporter> parent, string name)
         {
             var startTestItemRequest = new StartTestItemRequest()
             {
                 Name = name,
                 StartTime = DateTime.UtcNow,
-                Type = testItemType
+                Type = TestItemType.Test
             };
 
-            var suite = _reporters.Count != 0
-                ? _reporters.Last().Item2.StartNewTestNode(startTestItemRequest)
+            var suite = parent.Value != null
+                ? parent.Value.StartNewTestNode(startTestItemRequest)
                 : _launchReporter.StartNewTestNode(startTestItemRequest);
-            var reporter = new Tuple<string, TestReporter>(name, suite);
-            _reporters.Add(reporter);
+            return suite;
         }
 
-        private void DeleteTestReporter(int index, Status withStatus)
+        private void DeleteTestReporter(IReadonlyNode<TestReporter> node, Status withStatus)
         {
             var finishTestItemRequest = new FinishTestItemRequest()
             {
                 EndTime = DateTime.UtcNow,
                 Status = (Client.Models.Status)withStatus
             };
-            _reporters[index].Item2.Finish(finishTestItemRequest);
-            _reporters.RemoveAt(index);
+
+            node.Value.Finish(finishTestItemRequest);
         }
     }
 }
