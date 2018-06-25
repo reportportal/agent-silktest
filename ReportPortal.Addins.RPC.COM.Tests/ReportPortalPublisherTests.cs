@@ -1,48 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using FakeItEasy;
 using NUnit.Framework;
-using ReportPortal.Client.Models;
 
 namespace ReportPortal.Addins.RPC.COM.Tests
 {
     [TestFixture]
     public class ReportPortalPublisherTests
     {
-        private class RpProxy : IDisposable
-        {
-            public ReportPortalPublisher Publisher { get; private set; }
-            public ITestable TestMe => Publisher;
-            public static RpProxy CreateValidPortal(string method)
-            {
-                var config = A.Fake<IConfiguration>();
-                A.CallTo(() => config.ServerUrl).Returns("https://rp.epam.com/api/v1/");
-                A.CallTo(() => config.ServerProjectName).Returns("default_project");
-                A.CallTo(() => config.ServerPassword).Returns("7853c7a9-7f27-43ea-835a-cab01355fd17");
-                A.CallTo(() => config.LaunchMode).Returns(LaunchMode.Debug);
-                A.CallTo(() => config.LaunchName).Returns($"SilkTest_{method}");
-
-
-                var publisher = new ReportPortalPublisher(config);
-                publisher.Init();
-
-                return new RpProxy() { Publisher = publisher };
-            }
-
-            public void Reset()
-            {
-                Publisher = null;
-            }
-
-            public void Dispose()
-            {
-                if (Publisher != null && !Publisher.FinishLaunch())
-                {
-                    Assert.Fail(Publisher.GetLastError());
-                }
-            }
-
-        }
         public class Init
         {
             IConfiguration _config;
