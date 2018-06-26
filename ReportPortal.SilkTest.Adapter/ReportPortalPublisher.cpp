@@ -44,9 +44,10 @@ bool CReportPortalPublisher::AddLogItem(wchar_t* testFullName, wchar_t* logMessa
 		default: throw std::exception("Unknown log level");
 	}										
 	
-	_bstr_t comString = logMessage;
+	_bstr_t testFullNameCom = testFullName;
+	_bstr_t logMessageCom = logMessage;
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->AddLogItem(testFullName, comString, logLevel, &ret);
+	HRESULT hr = _reportPortalPublisherComPtr->AddLogItem(testFullNameCom, logMessageCom, logLevel, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;
