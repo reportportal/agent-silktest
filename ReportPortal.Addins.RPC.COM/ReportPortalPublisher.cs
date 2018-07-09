@@ -38,9 +38,6 @@ namespace ReportPortal.Addins.RPC.COM
         #region ITestable
 
         public IEnumerable<IReadonlyNode<TestReporter>> RunningTests => _concurrentTree.RunningTests;
-
-            //string ITestable.FullTestName => string.Join(Separator.ToString(), _concurrentTree._reporters.Select(x => x.Item1));
-        //IEnumerable<string> ITestable.Hierarchy => _concurrentTree._reporters.Select(x => x.Item1);
         #endregion
 
         public bool Init()
