@@ -62,15 +62,15 @@ namespace ReportPortal.Addins.RPC.COM
             }
         }
 
-        public bool StartLaunch()
+        public bool StartLaunch(string launchName, Mode mode)
         {
             try
             {
                 var launchRequest = new StartLaunchRequest()
                 {
-                    Name = _configuration.LaunchName,
+                    Name = launchName,
                     StartTime = DateTime.UtcNow,
-                    Mode = _configuration.LaunchMode
+                    Mode = (LaunchMode)mode
                 };
                 
                 _launchReporter.Start(launchRequest);

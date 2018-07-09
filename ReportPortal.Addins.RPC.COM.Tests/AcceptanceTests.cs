@@ -8,10 +8,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void StressTest01()
         {
-            using (var rp = RpProxy.CreateValidPortal("StressTest01"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StressTest01)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -36,10 +36,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase01()    // single req ID -> passed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase01"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase01)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -59,10 +59,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase02()    // two req IDs in same test case -> passed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase02"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase02)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -88,11 +88,11 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase03()    // two req IDs in same test case used in parallel -> failed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase03"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
 
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase03)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -119,10 +119,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase04()    // two req IDs in two test cases -> passed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase04"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase04)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -148,10 +148,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase05()    // two req IDs in two test scripts -> passed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase04"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase05)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);
@@ -178,10 +178,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
         [Test]
         public void UseCase06()    // two req IDs in two test plans -> passed
         {
-            using (var rp = RpProxy.CreateValidPortal("UseCase04"))
+            using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch();
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase06)), Mode.Debug);
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
                 result &= result && rp.Publisher.StartTest(testName);

@@ -7,8 +7,7 @@ namespace ReportPortal.Addins.RPC.COM
     [Serializable]
     public class ReportPortalConfiguration
     {
-        public GeneralConfiguration GeneralConfiguration { get; set; }
-        public LaunchConfiguration LaunchConfiguration { get; set; }
         public ServerConfiguration ServerConfiguration { get; set; }
+        public ProxyConfiguration ProxyConfiguration { get; set; }
     }
 }

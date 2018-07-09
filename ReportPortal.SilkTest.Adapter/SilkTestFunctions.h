@@ -14,6 +14,9 @@ const SilkTestTestStatus SilkTestTestStatus_Passed2 = 2;
 //const SilkTestTestStatus SilkTestTestStatus_None1	= 9;
 //const SilkTestTestStatus SilkTestTestStatus_None2	= 0;
 
+typedef int LaunchMode;
+const LaunchMode LaunchMode_Default = 0;
+const LaunchMode LaunchMode_Debug = 1;
 
 extern "C"
 {
@@ -24,7 +27,7 @@ extern "C"
 	__declspec (dllexport) bool StartTest(wchar_t* testFullName);
 	__declspec (dllexport) bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);
 
-	__declspec (dllexport) bool StartLaunch();
+	__declspec (dllexport) bool StartLaunch(wchar_t* launchName, LaunchMode mode);
 	__declspec (dllexport) bool FinishLaunch();
 
 	__declspec (dllexport) int GetErrorDescription(wchar_t* message, int maxMessageSize);

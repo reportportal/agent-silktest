@@ -21,7 +21,7 @@ public: // wrap methods
 	bool StartTest(wchar_t* testFullName);
 	bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);
 
-	bool StartLaunch();
+	bool StartLaunch(wchar_t* launchName, Mode mode);
 	bool FinishLaunch();
 
 	std::wstring GetLastError();

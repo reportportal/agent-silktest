@@ -76,11 +76,11 @@ bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forc
 	return false;
 }
 
-bool StartLaunch()
+bool StartLaunch(wchar_t* launchName, LaunchMode mode)
 {
 	try
 	{
-		return ReportPortalPublisherComWrapper.StartLaunch();
+		return ReportPortalPublisherComWrapper.StartLaunch(launchName, (Mode) mode);
 	}
 	catch (const std::exception& ex)
 	{

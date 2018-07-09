@@ -73,12 +73,13 @@ namespace ReportPortal.Addins.RPC.COM.Tests
 
         public class StartLaunch
         {
+            private readonly string _launchName = RpProxy.GetLaunchName(nameof(StartLaunch));
             [Test]
             public void EnsureThatReturnTrueWithValidParameters()
             {
-                using (var proxy = RpProxy.CreateValidPortal(nameof(StartLaunch)))
+                using (var proxy = RpProxy.CreateValidPortal())
                 {
-                    bool res = proxy.Publisher.StartLaunch();
+                    bool res = proxy.Publisher.StartLaunch(_launchName, Mode.Debug);
 
                     Assert.IsTrue(res);
                 }
@@ -89,7 +90,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             {
                 var publisher = new ReportPortalPublisher(A.Dummy<IConfiguration>());
 
-                bool res = publisher.StartLaunch();
+                bool res = publisher.StartLaunch(_launchName, Mode.Debug);
 
                 Assert.IsFalse(res);
             }
@@ -97,9 +98,9 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [Test]
             public void ItShouldReportSuccessWithValidParameters()
             {
-                using (var proxy = RpProxy.CreateValidPortal(nameof(StartLaunch)))
+                using (var proxy = RpProxy.CreateValidPortal())
                 {
-                    proxy.Publisher.StartLaunch();
+                    proxy.Publisher.StartLaunch(_launchName, Mode.Debug);
 
                     string res = proxy.Publisher.GetLastError();
 
@@ -112,7 +113,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void ItShouldReportAnErrorWithInvalidParameters()
             {
                 var publisher = new ReportPortalPublisher(A.Dummy<IConfiguration>());
-                publisher.StartLaunch();
+                publisher.StartLaunch(_launchName, Mode.Debug);
 
                 string res = publisher.GetLastError();
 
@@ -128,8 +129,8 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [SetUp]
             public void Setup()
             {
-                _rpProxy = RpProxy.CreateValidPortal(nameof(StartTest));
-                _rpProxy.Publisher.StartLaunch();
+                _rpProxy = RpProxy.CreateValidPortal();
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StartTest)), Mode.Debug);
             }
 
             [TearDown]
@@ -203,8 +204,8 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [SetUp]
             public void Setup()
             {
-                _rpProxy = RpProxy.CreateValidPortal(nameof(FinishTest));
-                _rpProxy.Publisher.StartLaunch();
+                _rpProxy = RpProxy.CreateValidPortal();
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishTest)), Mode.Debug);
             }
 
             [TearDown]
@@ -285,8 +286,8 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [SetUp]
             public void Setup()
             {
-                _rpProxy = RpProxy.CreateValidPortal(nameof(FinishLaunch));
-                _rpProxy.Publisher.StartLaunch();
+                _rpProxy = RpProxy.CreateValidPortal();
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishLaunch)), Mode.Debug);
             }
 
             [TearDown]
@@ -315,8 +316,8 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [SetUp]
             public void Setup()
             {
-                _rpProxy = RpProxy.CreateValidPortal(nameof(AddLogItem));
-                _rpProxy.Publisher.StartLaunch();
+                _rpProxy = RpProxy.CreateValidPortal();
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(AddLogItem)), Mode.Debug);
             }
 
             [TearDown]

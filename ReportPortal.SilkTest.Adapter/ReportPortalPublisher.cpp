@@ -91,10 +91,11 @@ bool CReportPortalPublisher::FinishTest(wchar_t* testFullName, SilkTestTestStatu
 	return false;
 }
 
-bool CReportPortalPublisher::StartLaunch()
+bool CReportPortalPublisher::StartLaunch(wchar_t* launchName, Mode mode)
 {
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->StartLaunch(&ret);
+	_bstr_t comString = launchName;
+	HRESULT hr = _reportPortalPublisherComPtr->StartLaunch(comString, mode, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;

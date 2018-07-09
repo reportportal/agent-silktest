@@ -9,15 +9,12 @@ namespace ReportPortal.Addins.RPC.COM.Tests
     {
         public ReportPortalPublisher Publisher { get; private set; }
         public ITestable TestMe => Publisher;
-        public static RpProxy CreateValidPortal(string method)
+        public static RpProxy CreateValidPortal()
         {
             var config = A.Fake<IConfiguration>();
             A.CallTo(() => config.ServerUrl).Returns("https://rp.epam.com/api/v1/");
             A.CallTo(() => config.ServerProjectName).Returns("default_project");
             A.CallTo(() => config.ServerPassword).Returns("7853c7a9-7f27-43ea-835a-cab01355fd17");
-            A.CallTo(() => config.LaunchMode).Returns(LaunchMode.Debug);
-            A.CallTo(() => config.LaunchName).Returns($"SilkTest_{method}");
-
 
             var publisher = new ReportPortalPublisher(config);
             publisher.Init();
@@ -25,6 +22,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             return new RpProxy() { Publisher = publisher };
         }
 
+        public static string GetLaunchName(string methodName)
+        {
+            return $"SilkTest_{methodName}";
+        }
         public void Reset()
         {
             Publisher = null;

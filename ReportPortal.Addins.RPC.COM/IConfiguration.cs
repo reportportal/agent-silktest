@@ -8,10 +8,6 @@ namespace ReportPortal.Addins.RPC.COM
         string ServerUrl { get; }
         string ServerProjectName { get; }
         string ServerPassword { get; }
-
-        string LaunchName { get; }
-        Client.Models.LaunchMode LaunchMode { get; }
-
         bool ProxyAvailable { get; }
         string ProxyDomain { get; }
         string ProxyServer { get; }

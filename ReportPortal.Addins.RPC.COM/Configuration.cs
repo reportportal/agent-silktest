@@ -30,14 +30,10 @@ namespace ReportPortal.Addins.RPC.COM
         public string ServerProjectName => ReportPortalConfiguration.ServerConfiguration.Project;
         public string ServerPassword => ReportPortalConfiguration.ServerConfiguration.Password;
 
-
-        public string LaunchName => ReportPortalConfiguration.LaunchConfiguration.LaunchName;
-        public Client.Models.LaunchMode LaunchMode => ReportPortalConfiguration.LaunchConfiguration.DebugMode ? Client.Models.LaunchMode.Debug : Client.Models.LaunchMode.Default;
-
-        public bool ProxyAvailable => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration != null;
-        public string ProxyDomain => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Domain;
-        public string ProxyServer => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Server;
-        public string ProxyUser => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Username;
-        public string ProxyPassword => ReportPortalConfiguration.GeneralConfiguration.ProxyConfiguration?.Password;
+        public bool ProxyAvailable => ReportPortalConfiguration.ProxyConfiguration != null;
+        public string ProxyDomain => ReportPortalConfiguration.ProxyConfiguration?.Domain;
+        public string ProxyServer => ReportPortalConfiguration.ProxyConfiguration?.Server;
+        public string ProxyUser => ReportPortalConfiguration.ProxyConfiguration?.Username;
+        public string ProxyPassword => ReportPortalConfiguration.ProxyConfiguration?.Password;
     }
 }

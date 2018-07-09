@@ -1,17 +1,15 @@
 <?xml version="1.0"?>
 <ReportPortalConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GeneralConfiguration>
-    <DebugMode>true</DebugMode>
-  </GeneralConfiguration>
-  <LaunchConfiguration>
-    <LaunchName>LaunchName</LaunchName>
-    <DebugMode>false</DebugMode>
-    <Tags>Tag1,Tag2</Tags>
-  </LaunchConfiguration>
   <ServerConfiguration>
     <Url>https://rp.epam.com/api/v1/</Url>
     <Project>Project</Project>
     <Username>default</Username>
     <Password>UUID</Password>
   </ServerConfiguration>
+  <ProxyConfiguration>
+    <Username></Username> 
+    <Password></Password> 
+    <Domain></Domain> 
+    <Server></Server>
+  </ProxyConfiguration>
 </ReportPortalConfiguration>
