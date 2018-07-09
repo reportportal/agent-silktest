@@ -51,7 +51,7 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             _lock.EnterWriteLock();
             try
             {
-                var names = pathName.Split(Constants.Separator);
+                var names = pathName.Split(Constants.PathSeparator);
                 names.Aggregate(_superRoot,
                     (parent, nodeName) => (IEditableNode<TValue>) TryToAddChild(parent, nodeName, createValue));
             }
@@ -94,7 +94,7 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             _lock.EnterReadLock();
             try
             {
-                var names = pathName.Split(Constants.Separator);
+                var names = pathName.Split(Constants.PathSeparator);
                 var parent = _superRoot;
 
                 foreach (string name in names)

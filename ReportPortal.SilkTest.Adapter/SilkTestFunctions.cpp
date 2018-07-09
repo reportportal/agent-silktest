@@ -51,11 +51,11 @@ bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel log
 	return false;
 }
 
-bool StartTest(wchar_t* testFullName)
+bool StartTest(wchar_t* testFullName, wchar_t* tags)
 {
 	try
 	{
-		return ReportPortalPublisherComWrapper.StartTest(testFullName);
+		return ReportPortalPublisherComWrapper.StartTest(testFullName, tags);
 	}
 	catch (const std::exception& ex)
 	{
@@ -76,11 +76,11 @@ bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forc
 	return false;
 }
 
-bool StartLaunch(wchar_t* launchName, LaunchMode mode)
+bool StartLaunch(wchar_t* launchName, LaunchMode mode, wchar_t* tags)
 {
 	try
 	{
-		return ReportPortalPublisherComWrapper.StartLaunch(launchName, (Mode) mode);
+		return ReportPortalPublisherComWrapper.StartLaunch(launchName, (Mode) mode, tags);
 	}
 	catch (const std::exception& ex)
 	{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -59,7 +60,7 @@ namespace ReportPortal.Addins.RPC.COM
             }
         }
 
-        public bool StartLaunch(string launchName, Mode mode)
+        public bool StartLaunch(string launchName, Mode mode, string tags)
         {
             try
             {
@@ -67,7 +68,8 @@ namespace ReportPortal.Addins.RPC.COM
                 {
                     Name = launchName,
                     StartTime = DateTime.UtcNow,
-                    Mode = (LaunchMode)mode
+                    Mode = (LaunchMode)mode,
+                    Tags = SplitOnTags(tags)
                 };
                 
                 _launchReporter.Start(launchRequest);
@@ -80,11 +82,11 @@ namespace ReportPortal.Addins.RPC.COM
                 return false;
             }
         }
-        public bool StartTest(string testFullName)
+        public bool StartTest(string testFullName, string tags)
         {
             try
             {
-                _concurrentTree.AddPath(testFullName, AddTestReporter);
+                _concurrentTree.AddPath(testFullName, (parent, name) => AddTestReporter(parent, name, tags));
                 ReportSuccess(nameof(StartTest));
                 return true;
             }
@@ -190,14 +192,6 @@ namespace ReportPortal.Addins.RPC.COM
 
             _lastError = text.ToString();
         }
-
-        private void ReportError(string failedFunction, string message)
-        {
-            var text = new StringBuilder();
-            text.Append($"{failedFunction} is failed").AppendLine();
-            text.Append("Message: ").Append(message).AppendLine();
-            _lastError = text.ToString();
-        }
         
         private IWebProxy TryToCreateProxyServer()
         {
@@ -213,13 +207,14 @@ namespace ReportPortal.Addins.RPC.COM
             return proxy;
         }
 
-        private TestReporter AddTestReporter(IReadonlyNode<TestReporter> parent, string name)
+        private TestReporter AddTestReporter(IReadonlyNode<TestReporter> parent, string name, string tags)
         {
             var startTestItemRequest = new StartTestItemRequest()
             {
                 Name = name,
                 StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
+                Type = TestItemType.Test,
+                Tags = SplitOnTags(tags)
             };
 
             var suite = parent.Value != null
@@ -237,6 +232,13 @@ namespace ReportPortal.Addins.RPC.COM
             };
 
             node.Value.Finish(finishTestItemRequest);
+        }
+
+        private static List<string> SplitOnTags(string tags)
+        {
+            return string.IsNullOrEmpty(tags)
+                ? new List<string>()
+                : tags.Split(Constants.TagsSeparator).Select(x => x.Trim()).ToList();
         }
     }
 }

@@ -22,13 +22,17 @@ extern "C"
 {
 	__declspec (dllexport) bool Init();
 
-	__declspec (dllexport) bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel logLevel);
+	// testFullName - full path to the test, hierarchy is separated by ':' symbol
+	// tags - list of tags that should be associated with launch. They are separated by ';' symbol
+	__declspec (dllexport) bool StartLaunch(wchar_t* launchName, LaunchMode mode, wchar_t* tags);
+	__declspec (dllexport) bool FinishLaunch();
 
-	__declspec (dllexport) bool StartTest(wchar_t* testFullName);
+	// testFullName - full path to the test, hierarchy is separated by ':' symbol
+	// tags - list of tags that should be associated with launch. They are separated by ';' symbol
+	__declspec (dllexport) bool StartTest(wchar_t* testFullName, wchar_t* tags);
 	__declspec (dllexport) bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);
 
-	__declspec (dllexport) bool StartLaunch(wchar_t* launchName, LaunchMode mode);
-	__declspec (dllexport) bool FinishLaunch();
+	__declspec (dllexport) bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel logLevel);
 
 	__declspec (dllexport) int GetErrorDescription(wchar_t* message, int maxMessageSize);
 

@@ -56,11 +56,12 @@ bool CReportPortalPublisher::AddLogItem(wchar_t* testFullName, wchar_t* logMessa
 	return false;
 }
 
-bool CReportPortalPublisher::StartTest(wchar_t* testFullName)
+bool CReportPortalPublisher::StartTest(wchar_t* testFullName, wchar_t* tags)
 {
-	_bstr_t comString = testFullName;
+	_bstr_t comTestFullName = testFullName;
+	_bstr_t comTags = tags;
 	VARIANT_BOOL ret;
-	HRESULT hr = _reportPortalPublisherComPtr->StartTest(comString, &ret);
+	HRESULT hr = _reportPortalPublisherComPtr->StartTest(comTestFullName, comTags, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;
@@ -91,11 +92,12 @@ bool CReportPortalPublisher::FinishTest(wchar_t* testFullName, SilkTestTestStatu
 	return false;
 }
 
-bool CReportPortalPublisher::StartLaunch(wchar_t* launchName, Mode mode)
+bool CReportPortalPublisher::StartLaunch(wchar_t* launchName, Mode mode, wchar_t* tags)
 {
 	VARIANT_BOOL ret;
-	_bstr_t comString = launchName;
-	HRESULT hr = _reportPortalPublisherComPtr->StartLaunch(comString, mode, &ret);
+	_bstr_t comLaunchName = launchName;
+	_bstr_t comTags = tags;
+	HRESULT hr = _reportPortalPublisherComPtr->StartLaunch(comLaunchName, mode, comTags, &ret);
 	if (hr == S_OK)
 	{
 		return ret != 0;

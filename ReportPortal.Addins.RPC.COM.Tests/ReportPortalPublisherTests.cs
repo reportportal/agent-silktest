@@ -79,7 +79,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             {
                 using (var proxy = RpProxy.CreateValidPortal())
                 {
-                    bool res = proxy.Publisher.StartLaunch(_launchName, Mode.Debug);
+                    bool res = proxy.Publisher.StartLaunch(_launchName, Mode.Debug, "tag1;tag2");
 
                     Assert.IsTrue(res);
                 }
@@ -90,7 +90,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             {
                 var publisher = new ReportPortalPublisher(A.Dummy<IConfiguration>());
 
-                bool res = publisher.StartLaunch(_launchName, Mode.Debug);
+                bool res = publisher.StartLaunch(_launchName, Mode.Debug, "tag1;tag2");
 
                 Assert.IsFalse(res);
             }
@@ -100,7 +100,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             {
                 using (var proxy = RpProxy.CreateValidPortal())
                 {
-                    proxy.Publisher.StartLaunch(_launchName, Mode.Debug);
+                    proxy.Publisher.StartLaunch(_launchName, Mode.Debug, "tag1;tag2");
 
                     string res = proxy.Publisher.GetLastError();
 
@@ -113,7 +113,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void ItShouldReportAnErrorWithInvalidParameters()
             {
                 var publisher = new ReportPortalPublisher(A.Dummy<IConfiguration>());
-                publisher.StartLaunch(_launchName, Mode.Debug);
+                publisher.StartLaunch(_launchName, Mode.Debug, "tag1;tag2");
 
                 string res = publisher.GetLastError();
 
@@ -130,7 +130,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void Setup()
             {
                 _rpProxy = RpProxy.CreateValidPortal();
-                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StartTest)), Mode.Debug);
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StartTest)), Mode.Debug, "StartTest;tag1;tag2");
             }
 
             [TearDown]
@@ -145,7 +145,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C:D")]
             public void EnsureThatTestNameIsValid(string name)
             {
-                var res = _rpProxy.Publisher.StartTest(name);
+                var res = _rpProxy.Publisher.StartTest(name, "1");
 
                 Assert.IsTrue(res);
                 Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(name));
@@ -157,9 +157,9 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B", "A:B:C:D")]
             public void EnsureThatIsPossibleToAddNestedNodes(string parent, string child)
             {
-                _rpProxy.Publisher.StartTest(parent);
+                _rpProxy.Publisher.StartTest(parent, "parent");
 
-                _rpProxy.Publisher.StartTest(child);
+                _rpProxy.Publisher.StartTest(child, "parent;child");
 
                 Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(child));
             }
@@ -172,9 +172,9 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C", "D:E")]
             public void EnsureThatIsPossibleToAddSiblins(string firstTest, string secondTest)
             {
-                _rpProxy.Publisher.StartTest(firstTest);
+                _rpProxy.Publisher.StartTest(firstTest, "");
 
-                var res = _rpProxy.Publisher.StartTest(secondTest);
+                var res = _rpProxy.Publisher.StartTest(secondTest,"");
 
                 Assert.IsTrue(res);
                 Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(firstTest));
@@ -186,9 +186,9 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C", "A:B:C")]
             public void EnsureThatDublicatesAreReused(string firstTest, string secondTest)
             {
-                _rpProxy.Publisher.StartTest(firstTest);
+                _rpProxy.Publisher.StartTest(firstTest, "");
 
-                var res = _rpProxy.Publisher.StartTest(secondTest);
+                var res = _rpProxy.Publisher.StartTest(secondTest, "");
 
                 Assert.IsTrue(res);
                 Assert.That(_rpProxy.TestMe.RunningTests.Select(x => x.FullName), Has.Member(firstTest));
@@ -205,7 +205,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void Setup()
             {
                 _rpProxy = RpProxy.CreateValidPortal();
-                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishTest)), Mode.Debug);
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishTest)), Mode.Debug, "FinishTest");
             }
 
             [TearDown]
@@ -219,7 +219,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C:D", "A:B:C")]
             public void EnsureThatTestIsFinished(string name, string expectedName)
             {
-                _rpProxy.Publisher.StartTest(name);
+                _rpProxy.Publisher.StartTest(name, "");
 
                 var res = _rpProxy.Publisher.FinishTest(name, Status.Passed, false);
 
@@ -232,7 +232,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void EnsureThatRootTestIsFinished()
             {
                 const string name = "A";
-                _rpProxy.Publisher.StartTest(name);
+                _rpProxy.Publisher.StartTest(name, "");
 
                 var res = _rpProxy.Publisher.FinishTest(name, Status.Passed, false);
 
@@ -248,7 +248,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C:D", "A:B", false, false)]
             public void EnsureThatParentSuiteFinishedWithStatus(string name, string suite, bool forceClose, bool status)
             {
-                _rpProxy.Publisher.StartTest(name);
+                _rpProxy.Publisher.StartTest(name, "");
 
                 var res = _rpProxy.Publisher.FinishTest(suite, Status.Passed, forceClose);
 
@@ -260,7 +260,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C:D", "A:B", new[] {"A"})]
             public void EnsureThatSetIsClosed(string testName, string suiteToClose, string[] expectedResult)
             {
-                _rpProxy.Publisher.StartTest(testName);
+                _rpProxy.Publisher.StartTest(testName, "");
 
                 _rpProxy.Publisher.FinishTest(suiteToClose, Status.Passed, true);
 
@@ -271,7 +271,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [TestCase("A:B:C:D", "A:B")]
             public void EnsureThatSetIsNotClosed(string testName, string suiteToClose)
             {
-                _rpProxy.Publisher.StartTest(testName);
+                _rpProxy.Publisher.StartTest(testName, "");
 
                 _rpProxy.Publisher.FinishTest(suiteToClose, Status.Passed, false);
 
@@ -287,7 +287,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void Setup()
             {
                 _rpProxy = RpProxy.CreateValidPortal();
-                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishLaunch)), Mode.Debug);
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(FinishLaunch)), Mode.Debug, "FinshLaunch");
             }
 
             [TearDown]
@@ -299,7 +299,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             [Test]
             public void EnsureThatLaunchIsFinished()
             {
-                _rpProxy.Publisher.StartTest("A:B:C:D");
+                _rpProxy.Publisher.StartTest("A:B:C:D", "");
 
                 var res = _rpProxy.Publisher.FinishLaunch();
 
@@ -317,7 +317,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void Setup()
             {
                 _rpProxy = RpProxy.CreateValidPortal();
-                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(AddLogItem)), Mode.Debug);
+                _rpProxy.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(AddLogItem)), Mode.Debug, "");
             }
 
             [TearDown]
@@ -330,7 +330,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             public void EnsureThatLogItemSentToReportPortal()
             {
                 var testName = "A:B:C:D";
-                _rpProxy.Publisher.StartTest(testName);
+                _rpProxy.Publisher.StartTest(testName, "");
 
                 var res = _rpProxy.Publisher.AddLogItem(testName, "message", LogLevel.Info);
 

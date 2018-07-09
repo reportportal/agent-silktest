@@ -37,7 +37,7 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             if (IsChildAlreadyExist(childName))
                 throw new Exception($"Node '{childName}' is already exist.");
 
-            string prefix = string.IsNullOrEmpty(FullName) ? string.Empty : FullName + Constants.Separator;
+            string prefix = string.IsNullOrEmpty(FullName) ? string.Empty : FullName + Constants.PathSeparator;
             var root = new ConcurrentTreeNode<TValue>(this, prefix + childName, childName, createValue(this, childName));
             _children.Add(root);
             return root;

@@ -18,10 +18,10 @@ public: // wrap methods
 
 	bool AddLogItem(wchar_t* testFullName, wchar_t* logMessage, SilkTestLogLevel logLevel);
 
-	bool StartTest(wchar_t* testFullName);
+	bool StartTest(wchar_t* testFullName, wchar_t* tags);
 	bool FinishTest(wchar_t* testFullName, SilkTestTestStatus testOutcome, bool forceToFinishNestedSteps);
 
-	bool StartLaunch(wchar_t* launchName, Mode mode);
+	bool StartLaunch(wchar_t* launchName, Mode mode, wchar_t* tags);
 	bool FinishLaunch();
 
 	std::wstring GetLastError();

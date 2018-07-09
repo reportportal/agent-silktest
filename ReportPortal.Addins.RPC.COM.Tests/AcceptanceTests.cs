@@ -11,10 +11,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StressTest01)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(StressTest01)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
 
                 for (int i = 0; i < 100 && result; i++)
                 {
@@ -39,10 +39,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase01)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase01)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
                 result &= result && rp.Publisher.AddLogItem(testName, "bar", LogLevel.Warning);
                 result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true);    // finish req ID
@@ -62,15 +62,15 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase02)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase02)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
 
                 var testName2 = "PlanOne:ScriptRed:TestCaseXXX:ReqId02";
-                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.StartTest(testName2, "");
                 result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
@@ -92,14 +92,14 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             {
 
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase03)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase03)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
 
                 var testName2 = "PlanOne:ScriptRed:TestCaseXXX:ReqId02";
-                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.StartTest(testName2, "");
 
                 result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
 
@@ -122,16 +122,16 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase04)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase04)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
 
                 var testName2 = "PlanOne:ScriptRed:TestCaseYYY:ReqId02";
-                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.StartTest(testName2, "");
                 result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
                           
@@ -151,17 +151,17 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase05)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase05)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed", Status.Passed, true); // finish script
 
                 var testName2 = "PlanOne:ScriptBlue:TestCaseYYY:ReqId02";
-                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.StartTest(testName2, "");
                 result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
@@ -181,10 +181,10 @@ namespace ReportPortal.Addins.RPC.COM.Tests
             using (var rp = RpProxy.CreateValidPortal())
             {
                 bool result = rp.Publisher.Init();
-                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase06)), Mode.Debug);
+                result &= result && rp.Publisher.StartLaunch(RpProxy.GetLaunchName(nameof(UseCase06)), Mode.Debug, "");
 
                 var testName = "PlanOne:ScriptRed:TestCaseXXX:ReqId01";
-                result &= result && rp.Publisher.StartTest(testName);
+                result &= result && rp.Publisher.StartTest(testName, "");
                 result &= result && rp.Publisher.AddLogItem(testName, "foo", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName, Status.Passed, true); // finish req ID
                 result &= result && rp.Publisher.FinishTest("PlanOne:ScriptRed:TestCaseXXX", Status.Passed, true); // finish test case
@@ -192,7 +192,7 @@ namespace ReportPortal.Addins.RPC.COM.Tests
                 result &= result && rp.Publisher.FinishTest("PlanOne", Status.Passed, true); // finish plan
 
                 var testName2 = "PlanTwo:ScriptBlue:TestCaseYYY:ReqId02";
-                result &= result && rp.Publisher.StartTest(testName2);
+                result &= result && rp.Publisher.StartTest(testName2, "");
                 result &= result && rp.Publisher.AddLogItem(testName2, "bar", LogLevel.Info);
                 result &= result && rp.Publisher.FinishTest(testName2, Status.Passed, true); // finish req ID
 
