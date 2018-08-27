@@ -86,7 +86,7 @@ namespace ReportPortal.Addins.RPC.COM
         {
             try
             {
-                _concurrentTree.AddPath(testFullName, (parent, name) => AddTestReporter(parent, name, tags));
+                _concurrentTree.AddPath(testFullName, (parent, name, type) => AddTestReporter(parent, name, type, tags));
                 ReportSuccess(nameof(StartTest));
                 return true;
             }
@@ -207,13 +207,13 @@ namespace ReportPortal.Addins.RPC.COM
             return proxy;
         }
 
-        private TestReporter AddTestReporter(IReadonlyNode<TestReporter> parent, string name, string tags)
+        private TestReporter AddTestReporter(IReadonlyNode<TestReporter> parent, string name, TestItemType testType, string tags)
         {
             var startTestItemRequest = new StartTestItemRequest()
             {
                 Name = name,
                 StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test,
+                Type = testType,
                 Tags = SplitOnTags(tags)
             };
 

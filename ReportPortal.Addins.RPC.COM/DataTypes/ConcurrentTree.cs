@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using ReportPortal.Client.Models;
 
 namespace ReportPortal.Addins.RPC.COM.DataTypes
 {
@@ -46,14 +47,23 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             }
         }
 
-        public void AddPath(string pathName, Func<IReadonlyNode<TValue>, string, TValue> createValue)
+        public void AddPath(string pathName, Func<IReadonlyNode<TValue>, string, TestItemType, TValue> createValue)
         {
             _lock.EnterWriteLock();
             try
             {
                 var names = pathName.Split(Constants.PathSeparator);
-                names.Aggregate(_superRoot,
-                    (parent, nodeName) => (IEditableNode<TValue>) TryToAddChild(parent, nodeName, createValue));
+                IEditableNode<TValue> node = _superRoot;
+                for (int i = 0; i < names.Length; i++)
+                {
+                    TestItemType type = TestItemType.Suite;
+                    if (i == names.Length - 2)
+                        type = TestItemType.Test;
+                    else if (i == names.Length - 1)
+                        type = TestItemType.Step;
+
+                    node = (IEditableNode<TValue>) TryToAddChild(node, names[i], type, createValue);
+                }
             }
             finally
             {
@@ -115,11 +125,11 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             }
         }
 
-        private IReadonlyNode<TValue> TryToAddChild(IReadonlyNode<TValue> parent, string name,
-            Func<IReadonlyNode<TValue>, string, TValue> createValue)
+        private IReadonlyNode<TValue> TryToAddChild(IReadonlyNode<TValue> parent, string name, TestItemType type,
+            Func<IReadonlyNode<TValue>, string, TestItemType, TValue> createValue)
         {
             var node = (IEditableNode<TValue>)(parent ?? _superRoot);
-            return node.FindChild(name) ?? node.AddChild(name, createValue);
+            return node.FindChild(name) ?? node.AddChild(name, (nod, nam) => createValue(nod, nam, type));
         }
     }
 }
