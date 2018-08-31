@@ -105,8 +105,8 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Configuration\ProxyConfiguration.cs" />
     <Compile Include="Configuration\ServerConfiguration.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="DataTypes\ConcurrentTreeNode.cs" />
+    <Compile Include="DataTypes\Constants.cs" />
     <Compile Include="DataTypes\IEditableNode.cs" />
     <Compile Include="DataTypes\IReadonlyNode.cs" />
     <Compile Include="IConfiguration.cs" />
@@ -118,6 +118,7 @@
     <Compile Include="ReportPortalPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
+    <Compile Include="DataTypes\Path.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

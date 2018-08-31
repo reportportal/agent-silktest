@@ -47,23 +47,13 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             }
         }
 
-        public void AddPath(string pathName, Func<IReadonlyNode<TValue>, string, TestItemType, TValue> createValue)
+        public void AddPath(Path path, Func<IReadonlyNode<TValue>, Location, TValue> createValue)
         {
             _lock.EnterWriteLock();
             try
             {
-                var names = pathName.Split(Constants.PathSeparator);
-                IEditableNode<TValue> node = _superRoot;
-                for (int i = 0; i < names.Length; i++)
-                {
-                    TestItemType type = TestItemType.Suite;
-                    if (i == names.Length - 2)
-                        type = TestItemType.Test;
-                    else if (i == names.Length - 1)
-                        type = TestItemType.Step;
-
-                    node = (IEditableNode<TValue>) TryToAddChild(node, names[i], type, createValue);
-                }
+                path.Aggregate(_superRoot,
+                    (current, location) => (IEditableNode<TValue>) TryToAddChild(current, location, createValue));
             }
             finally
             {
@@ -125,11 +115,11 @@ namespace ReportPortal.Addins.RPC.COM.DataTypes
             }
         }
 
-        private IReadonlyNode<TValue> TryToAddChild(IReadonlyNode<TValue> parent, string name, TestItemType type,
-            Func<IReadonlyNode<TValue>, string, TestItemType, TValue> createValue)
+        private IReadonlyNode<TValue> TryToAddChild(IReadonlyNode<TValue> parent, Location test,
+            Func<IReadonlyNode<TValue>, Location, TValue> createValue)
         {
             var node = (IEditableNode<TValue>)(parent ?? _superRoot);
-            return node.FindChild(name) ?? node.AddChild(name, (nod, nam) => createValue(nod, nam, type));
+            return node.FindChild(test.Name) ?? node.AddChild(test.Name, (nod, name) => createValue(nod, test));
         }
     }
 }

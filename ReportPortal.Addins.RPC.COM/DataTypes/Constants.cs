@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ReportPortal.Addins.RPC.COM
+namespace ReportPortal.Addins.RPC.COM.DataTypes
 {
     [ComVisible(false)]
     public static class Constants
